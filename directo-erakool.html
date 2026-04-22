@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Directo erakoolidele — Kõik ühes majandustarkvara</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #03107a;
+    --navy-mid: #0a1f8f;
+    --electric: #2d4eff;
+    --accent: #00c2ff;
+    --gold: #f5c842;
+    --white: #ffffff;
+    --off-white: #f4f6ff;
+    --gray: #8891b4;
+    --light-border: rgba(45,78,255,0.15);
+    --text: #0d1340;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    background: var(--off-white);
+    overflow-x: hidden;
+  }
+
+  /* ===== NAV ===== */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 6%;
+    background: rgba(3,16,122,0.96);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 1.4rem;
+    color: var(--white); letter-spacing: -0.5px;
+  }
+  .nav-logo span { color: var(--accent); }
+  .nav-cta {
+    background: var(--accent);
+    color: var(--navy);
+    font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 0.85rem;
+    padding: 10px 22px; border-radius: 50px;
+    text-decoration: none; letter-spacing: 0.3px;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,194,255,0.4); }
+
+  /* ===== HERO ===== */
+  .hero {
+    min-height: 100vh;
+    background: var(--navy);
+    display: flex; align-items: center;
+    padding: 120px 6% 80px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 70% 50%, rgba(45,78,255,0.35) 0%, transparent 65%),
+      radial-gradient(ellipse 40% 40% at 20% 80%, rgba(0,194,255,0.15) 0%, transparent 60%);
+  }
+  .hero-grid {
+    position: absolute; inset: 0; opacity: 0.06;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.6) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.6) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+  .hero-content { position: relative; z-index: 2; max-width: 680px; }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(0,194,255,0.12);
+    border: 1px solid rgba(0,194,255,0.3);
+    color: var(--accent);
+    font-size: 0.78rem; font-weight: 500; letter-spacing: 1px;
+    text-transform: uppercase; padding: 7px 16px; border-radius: 50px;
+    margin-bottom: 28px;
+  }
+  .hero-tag::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--accent); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: clamp(2.4rem, 5vw, 3.8rem);
+    line-height: 1.08; color: var(--white);
+    margin-bottom: 24px; letter-spacing: -1px;
+  }
+  h1 em { font-style: normal; color: var(--accent); }
+
+  .hero-sub {
+    font-size: 1.1rem; font-weight: 300;
+    color: rgba(255,255,255,0.7); line-height: 1.7;
+    max-width: 540px; margin-bottom: 40px;
+  }
+
+  .hero-btns { display: flex; gap: 14px; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--accent); color: var(--navy);
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem;
+    padding: 15px 32px; border-radius: 50px; text-decoration: none;
+    transition: all 0.25s; display: inline-block;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,194,255,0.45); }
+  .btn-secondary {
+    background: transparent; color: var(--white);
+    font-family: 'Syne', sans-serif; font-weight: 600; font-size: 0.95rem;
+    padding: 15px 32px; border-radius: 50px; text-decoration: none;
+    border: 1.5px solid rgba(255,255,255,0.25);
+    transition: all 0.25s; display: inline-block;
+  }
+  .btn-secondary:hover { border-color: rgba(255,255,255,0.6); background: rgba(255,255,255,0.05); }
+
+  .hero-stats {
+    margin-top: 60px;
+    display: flex; gap: 40px; flex-wrap: wrap;
+    padding-top: 40px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+  .stat-item { }
+  .stat-num {
+    font-family: 'Syne', sans-serif; font-weight: 800;
+    font-size: 2rem; color: var(--white);
+  }
+  .stat-num span { color: var(--accent); }
+  .stat-label { font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-top: 2px; }
+
+  /* ===== SECTION STYLES ===== */
+  section { padding: 90px 6%; }
+
+  .section-tag {
+    font-family: 'Syne', sans-serif; font-weight: 700;
+    font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--electric); margin-bottom: 14px;
+  }
+  h2 {
+    font-family: 'Syne', sans-serif; font-weight: 800;
+    font-size: clamp(1.9rem, 4vw, 2.8rem);
+    line-height: 1.15; letter-spacing: -0.8px;
+    color: var(--navy); margin-bottom: 16px;
+  }
+  .section-intro {
+    font-size: 1.05rem; font-weight: 300;
+    color: #4a5080; line-height: 1.75; max-width: 580px;
+  }
+
+  /* ===== CHALLENGE / PAIN SECTION ===== */
+  .challenge-section {
+    background: var(--white);
+  }
+  .challenge-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 60px; align-items: start; margin-top: 50px;
+  }
+  .pain-list { list-style: none; }
+  .pain-list li {
+    display: flex; gap: 14px; align-items: flex-start;
+    padding: 18px 0; border-bottom: 1px solid var(--light-border);
+    font-size: 0.97rem; color: #3a4070; line-height: 1.5;
+  }
+  .pain-list li:last-child { border-bottom: none; }
+  .pain-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: #fff3f3; display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; flex-shrink: 0; margin-top: 1px;
+  }
+  .pain-list strong { display: block; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+
+  .challenge-callout {
+    background: var(--navy);
+    border-radius: 20px; padding: 36px;
+    color: var(--white);
+  }
+  .challenge-callout h3 {
+    font-family: 'Syne', sans-serif; font-weight: 700;
+    font-size: 1.35rem; margin-bottom: 16px; line-height: 1.3;
+  }
+  .challenge-callout p {
+    font-size: 0.95rem; font-weight: 300;
+    color: rgba(255,255,255,0.75); line-height: 1.7; margin-bottom: 20px;
+  }
+  .callout-highlight {
+    background: rgba(0,194,255,0.12); border-left: 3px solid var(--accent);
+    padding: 14px 18px; border-radius: 0 10px 10px 0;
+    font-size: 0.9rem; color: var(--accent); line-height: 1.6;
+  }
+
+  /* ===== WORKFLOW SECTION ===== */
+  .workflow-section { background: var(--off-white); }
+
+  .workflow-steps {
+    margin-top: 60px;
+    display: flex; flex-direction: column; gap: 0;
+    position: relative;
+  }
+  .workflow-steps::before {
+    content: '';
+    position: absolute; left: 28px; top: 0; bottom: 0;
+    width: 2px; background: linear-gradient(to bottom, var(--electric), var(--accent));
+  }
+
+  .workflow-step {
+    display: grid; grid-template-columns: 60px 1fr;
+    gap: 28px; padding-bottom: 40px;
+    position: relative;
+  }
+  .workflow-step:last-child { padding-bottom: 0; }
+
+  .step-num {
+    width: 58px; height: 58px; border-radius: 50%;
+    background: var(--navy); color: var(--white);
+    font-family: 'Syne', sans-serif; font-weight: 800;
+    font-size: 1.1rem; display: flex; align-items: center; justify-content: center;
+    position: relative; z-index: 1; flex-shrink: 0;
+    box-shadow: 0 0 0 6px var(--off-white);
+  }
+
+  .step-content { padding-top: 8px; }
+  .step-content h3 {
+    font-family: 'Syne', sans-serif; font-weight: 700;
+    font-size: 1.2rem; color: var(--navy); margin-bottom: 8px;
+  }
+  .step-content p {
+    font-size: 0.95rem; color: #4a5080; line-height: 1.7; margin-bottom: 14px;
+  }
+  .step-docs {
+    display: flex; flex-wrap: wrap; gap: 8px;
+  }
+  .doc-tag {
+    background: var(--white); border: 1.5px solid var(--light-border);
+    color: var(--electric); font-size: 0.78rem; font-weight: 600;
+    padding: 5px 12px; border-radius: 50px;
+    font-family: 'Syne', sans-serif;
+    transition: all 0.2s;
+  }
+  .doc-tag:hover { background: var(--electric); color: var(--white); border-color: var(--electric); cursor: default; }
+  .doc-tag.highlight { background: var(--navy); color: var(--white); border-color: var(--navy); }
+
+  /* ===== FEATURES GRID ===== */
+  .features-section { background: var(--white); }
+  .features-intro-row {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 60px; align-items: end; margin-bottom: 60px;
+  }
+  .features-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .feature-card {
+    background: var(--off-white);
+    border-radius: 16px; padding: 28px;
+    border: 1px solid var(--light-border);
+    transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+    position: relative; overflow: hidden;
+  }
+  .feature-card::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(45,78,255,0.04) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(45,78,255,0.12);
+    border-color: rgba(45,78,255,0.35);
+  }
+  .feature-card.accent-card {
+    background: var(--navy); border-color: transparent;
+    grid-column: span 2;
+  }
+  .feature-icon {
+    width: 44px; height: 44px; border-radius: 12px;
+    background: rgba(45,78,255,0.1);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem; margin-bottom: 16px;
+  }
+  .feature-card.accent-card .feature-icon { background: rgba(0,194,255,0.15); }
+  .feature-card h3 {
+    font-family: 'Syne', sans-serif; font-weight: 700;
+    font-size: 1rem; color: var(--navy); margin-bottom: 10px;
+  }
+  .feature-card.accent-card h3 { color: var(--white); font-size: 1.2rem; }
+  .feature-card p { font-size: 0.88rem; color: #5a6090; line-height: 1.65; }
+  .feature-card.accent-card p { color: rgba(255,255,255,0.65); font-size: 0.92rem; }
+
+  .feature-list {
+    list-style: none; margin-top: 16px;
+  }
+  .feature-list li {
+    font-size: 0.88rem; color: rgba(255,255,255,0.8);
+    padding: 5px 0; display: flex; gap: 10px; align-items: center;
+  }
+  .feature-list li::before { content:'✓'; color: var(--accent); font-weight: 700; }
+
+  /* ===== INF3 HIGHLIGHT ===== */
+  .inf3-section {
+    background: linear-gradient(135deg, var(--navy) 0%, #0a1f8f 100%);
+    color: var(--white);
+  }
+  .inf3-inner {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 60px; align-items: center;
+  }
+  .inf3-section h2 { color: var(--white); }
+  .inf3-section .section-tag { color: var(--gold); }
+  .inf3-section .section-intro { color: rgba(255,255,255,0.7); }
+  .inf3-steps {
+    display: flex; flex-direction: column; gap: 16px; margin-top: 30px;
+  }
+  .inf3-step {
+    display: flex; gap: 16px; align-items: flex-start;
+    background: rgba(255,255,255,0.06); border-radius: 12px;
+    padding: 16px 20px; border: 1px solid rgba(255,255,255,0.1);
+  }
+  .inf3-step-icon {
+    width: 36px; height: 36px; border-radius: 8px;
+    background: rgba(0,194,255,0.2); color: var(--accent);
+    font-size: 1.1rem; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .inf3-step h4 {
+    font-family: 'Syne', sans-serif; font-weight: 600;
+    font-size: 0.9rem; color: var(--white); margin-bottom: 4px;
+  }
+  .inf3-step p { font-size: 0.83rem; color: rgba(255,255,255,0.55); line-height: 1.5; }
+
+  .deadline-box {
+    background: rgba(245,200,66,0.1); border: 1px solid rgba(245,200,66,0.4);
+    border-radius: 12px; padding: 20px 24px; margin-top: 24px;
+    display: flex; gap: 14px; align-items: center;
+  }
+  .deadline-icon { font-size: 1.6rem; }
+  .deadline-box p { font-size: 0.88rem; color: rgba(255,255,255,0.75); line-height: 1.6; }
+  .deadline-box strong { color: var(--gold); }
+
+  /* ===== ACCOUNTING SECTION ===== */
+  .accounting-section { background: var(--off-white); }
+  .reports-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 20px; margin-top: 50px;
+  }
+  .report-card {
+    background: var(--white); border-radius: 14px; padding: 24px;
+    border: 1px solid var(--light-border);
+    transition: all 0.25s;
+  }
+  .report-card:hover { border-color: var(--electric); transform: translateY(-3px); box-shadow: 0 8px 30px rgba(45,78,255,0.1); }
+  .report-card .r-icon { font-size: 1.8rem; margin-bottom: 12px; }
+  .report-card h4 {
+    font-family: 'Syne', sans-serif; font-weight: 700;
+    font-size: 0.95rem; color: var(--navy); margin-bottom: 8px;
+  }
+  .report-card p { font-size: 0.82rem; color: #6070a0; line-height: 1.6; }
+  .report-card .r-badge {
+    display: inline-block; margin-top: 10px;
+    font-size: 0.7rem; font-weight: 600; letter-spacing: 0.5px;
+    padding: 3px 10px; border-radius: 50px;
+    background: rgba(45,78,255,0.08); color: var(--electric);
+    font-family: 'Syne', sans-serif;
+  }
+
+  /* ===== ASSET MANAGEMENT ===== */
+  .assets-section { background: var(--white); }
+  .assets-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;
+    margin-top: 50px;
+  }
+  .asset-visual {
+    background: var(--navy); border-radius: 20px; padding: 36px;
+    position: relative; overflow: hidden;
+  }
+  .asset-visual::before {
+    content: ''; position: absolute; top: -30px; right: -30px;
+    width: 150px; height: 150px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,194,255,0.2) 0%, transparent 70%);
+  }
+  .asset-table { width: 100%; border-collapse: collapse; }
+  .asset-table th {
+    font-family: 'Syne', sans-serif; font-weight: 600;
+    font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px;
+    color: rgba(255,255,255,0.4); padding: 0 0 12px; text-align: left;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .asset-table td {
+    font-size: 0.85rem; color: rgba(255,255,255,0.8);
+    padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  .asset-table td:last-child { color: var(--accent); font-weight: 500; }
+  .asset-status {
+    display: inline-block; padding: 2px 8px; border-radius: 4px;
+    font-size: 0.7rem; font-weight: 600;
+  }
+  .status-active { background: rgba(0,194,255,0.15); color: var(--accent); }
+  .status-low { background: rgba(245,200,66,0.15); color: var(--gold); }
+
+  .assets-list { list-style: none; display: flex; flex-direction: column; gap: 20px; }
+  .assets-list li {
+    display: flex; gap: 16px; align-items: flex-start;
+  }
+  .asset-bullet {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: rgba(45,78,255,0.08); color: var(--electric);
+    font-size: 1.1rem; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .assets-list h4 {
+    font-family: 'Syne', sans-serif; font-weight: 600;
+    font-size: 0.95rem; color: var(--navy); margin-bottom: 4px;
+  }
+  .assets-list p { font-size: 0.85rem; color: #5a6090; line-height: 1.6; }
+
+  /* ===== PRICING CTA ===== */
+  .cta-section {
+    background: var(--navy);
+    text-align: center;
+    padding: 100px 6%;
+    position: relative; overflow: hidden;
+  }
+  .cta-section::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse 70% 70% at 50% 50%, rgba(45,78,255,0.4) 0%, transparent 70%);
+  }
+  .cta-section h2 { color: var(--white); max-width: 600px; margin: 0 auto 16px; position: relative; }
+  .cta-section .section-tag { color: var(--accent); position: relative; }
+  .cta-section p { color: rgba(255,255,255,0.65); font-size: 1rem; margin-bottom: 36px; position: relative; }
+  .cta-btns { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; position: relative; }
+
+  .btn-white {
+    background: var(--white); color: var(--navy);
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem;
+    padding: 15px 34px; border-radius: 50px; text-decoration: none;
+    transition: all 0.25s;
+  }
+  .btn-white:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(255,255,255,0.25); }
+  .btn-outline-white {
+    background: transparent; color: var(--white);
+    font-family: 'Syne', sans-serif; font-weight: 600; font-size: 0.95rem;
+    padding: 15px 34px; border-radius: 50px; text-decoration: none;
+    border: 1.5px solid rgba(255,255,255,0.3); transition: all 0.25s;
+  }
+  .btn-outline-white:hover { border-color: var(--white); background: rgba(255,255,255,0.08); }
+
+  /* ===== FOOTER ===== */
+  footer {
+    background: #060e45;
+    padding: 40px 6%;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 16px;
+  }
+  .footer-logo {
+    font-family: 'Syne', sans-serif; font-weight: 800;
+    font-size: 1.2rem; color: var(--white);
+  }
+  .footer-logo span { color: var(--accent); }
+  footer p { font-size: 0.82rem; color: rgba(255,255,255,0.3); }
+  footer a { color: rgba(255,255,255,0.4); text-decoration: none; transition: color 0.2s; }
+  footer a:hover { color: var(--accent); }
+
+  /* ===== ANIMATIONS ===== */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-up { opacity: 0; animation: fadeUp 0.6s ease forwards; }
+  .delay-1 { animation-delay: 0.15s; }
+  .delay-2 { animation-delay: 0.3s; }
+  .delay-3 { animation-delay: 0.45s; }
+  .delay-4 { animation-delay: 0.6s; }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 900px) {
+    .challenge-grid, .inf3-inner, .assets-row, .features-intro-row { grid-template-columns: 1fr; gap: 36px; }
+    .features-grid { grid-template-columns: 1fr 1fr; }
+    .feature-card.accent-card { grid-column: span 1; }
+    .reports-grid { grid-template-columns: 1fr 1fr; }
+    h1 { font-size: 2.2rem; }
+  }
+  @media (max-width: 600px) {
+    .features-grid, .reports-grid { grid-template-columns: 1fr; }
+    .hero-stats { gap: 24px; }
+    section { padding: 60px 5%; }
+    nav { padding: 14px 5%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Directo<span>.</span></div>
+  <a href="https://directo.ee/telli-demo" class="nav-cta" target="_blank">Telli tasuta demo →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-tag fade-up">✦ Erakoolidele mõeldud äritarkvara</div>
+    <h1 class="fade-up delay-1">Üks tarkvara.<br><em>Kogu kooli</em><br>finantshaldus.</h1>
+    <p class="hero-sub fade-up delay-2">Directo koondab õpilaslepingud, arvelduse, palgaarvestuse, põhivarad ja raamatupidamise ühte lihtsasse veebikeskkonda — nii et Sul jääb rohkem aega haridusele.</p>
+    <div class="hero-btns fade-up delay-3">
+      <a href="https://directo.ee/telli-demo" class="btn-primary" target="_blank">Telli tasuta demo</a>
+      <a href="#workflow" class="btn-secondary">Vaata tööprotsessi ↓</a>
+    </div>
+    <div class="hero-stats fade-up delay-4">
+      <div class="stat-item">
+        <div class="stat-num">4000<span>+</span></div>
+        <div class="stat-label">Klienti Eestis ja Baltikumis</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">25<span>+</span></div>
+        <div class="stat-label">Aastat kogemust</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">ISO</div>
+        <div class="stat-label">27001 sertifitseeritud</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CHALLENGE -->
+<section class="challenge-section">
+  <div class="challenge-grid">
+    <div>
+      <div class="section-tag">Erakooli väljakutsed</div>
+      <h2>Tuttavad probleemid?</h2>
+      <ul class="pain-list">
+        <li>
+          <div class="pain-icon">😤</div>
+          <div>
+            <strong>Arvete koostamine on tüütu käsitöö</strong>
+            Iga kuu tuleb saata kümneid või sadu arveid õppemaksu, toitlustuse ja lisateenuste kohta eraldi — sageli Excelist.
+          </div>
+        </li>
+        <li>
+          <div class="pain-icon">📋</div>
+          <div>
+            <strong>INF 3 deklaratsioon nõuab palju aega</strong>
+            Maksuametile esitatav koolituskulude deklaratsioon tuleb igal aastal koostada — õigete isikukoodide ja summadega.
+          </div>
+        </li>
+        <li>
+          <div class="pain-icon">🗂️</div>
+          <div>
+            <strong>Lepingud, varad ja raamatupidamine on eri kohtades</strong>
+            Müügilepingud, rendilepingud, põhivarad ja pearaamat — kõik erinevates failides ja tabelites.
+          </div>
+        </li>
+        <li>
+          <div class="pain-icon">📊</div>
+          <div>
+            <strong>Finantsaruandlus võtab palju aega</strong>
+            Bilanss, kasumiaruanne ja KMD-deklaratsioon tuleb kokku panna käsitsi, sageli vigadega.
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="challenge-callout">
+      <h3>Directo lahendab kõik need probleemid korraga</h3>
+      <p>Directo on Eesti päritolu terviklik äritarkvara, mis katab kõik erakooli vajadused — alates õpilaslepingute haldamisest kuni maksudeklaratsioonide esitamiseni.</p>
+      <p>Kõik dokumendid, aruanded ja protsessid on ühes kohas, veebipõhiselt kättesaadavad igalt poolt.</p>
+      <div class="callout-highlight">
+        💡 Erakoolide jaoks on kriitilise tähtsusega INF 3 koolituskulude deklaratsioon — Directol on selleks valmis lahendus, mis kogub andmed automaatselt müügiarvetest.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WORKFLOW -->
+<section class="workflow-section" id="workflow">
+  <div class="section-tag">Tüüpiline tööprotsess</div>
+  <h2>Erakooli aasta Directos</h2>
+  <p class="section-intro">Vaata, kuidas Directo toetab erakooli igapäevast tööd — õppeaasta algusest kuni aastaaruande esitamiseni.</p>
+
+  <div class="workflow-steps">
+
+    <div class="workflow-step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h3>Õppelepingute sõlmimine õpilastega</h3>
+        <p>Iga õppeaasta alguses sõlmitakse õpilaste (või vanemate) nimel müügilepingud, kus on kirjas õppemaks, maksegraafik ja lisateenused (toitlustus, transport, ringid). Directo müügileping on aluseks kõigile edasistele arvetele — lepingust saab genereerida regulaarsed arveid automaatselt.</p>
+        <div class="step-docs">
+          <span class="doc-tag highlight">📄 Müügileping</span>
+          <span class="doc-tag">Kliendi (õpilase) kaart</span>
+          <span class="doc-tag">Arve saaja (lapsevanem)</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="workflow-step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h3>Igakuine arveldamine õppemaks + lisateenused</h3>
+        <p>Iga kuu lähevad laiali arved, millel on koos nii õppemaks kui ka kõik lisateenused. Ressursi abil (nt toitlustuskalender) arvutatakse automaatselt, mitu korda õpilane sõi, ja see lisatakse arvele. Üks arve — kõik teenused koos.</p>
+        <div class="step-docs">
+          <span class="doc-tag highlight">📦 Ressurss (toitlustus, ringid)</span>
+          <span class="doc-tag">Müügiarve</span>
+          <span class="doc-tag">Müügileping → Arve</span>
+          <span class="doc-tag">Laekumise registreerimine</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="workflow-step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h3>Renditud varade ja ruumide haldamine</h3>
+        <p>Paljud erakoolid rendivad ruume, inventari või muid varasid. Directo rendilepingud võimaldavad jälgida rendiobjekte, makseaegu ja kulusid — ning siduda need automaatselt raamatupidamisega.</p>
+        <div class="step-docs">
+          <span class="doc-tag highlight">🏠 Rendileping</span>
+          <span class="doc-tag">Ostuleping (ostuarved)</span>
+          <span class="doc-tag">Kuluarvestus</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="workflow-step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <h3>Tarnijate arved ja kulud</h3>
+        <p>Kooli kulud — söögitarne, koristus, kontoritarbed, IT-vahendid — registreeritakse ostuarvetena. Directo ostuleping loob aluse korduvatele ostudele ning võimaldab jälgida kulukohustusi.</p>
+        <div class="step-docs">
+          <span class="doc-tag highlight">🛒 Ostuleping</span>
+          <span class="doc-tag">Ostuarve</span>
+          <span class="doc-tag">Maksekorraldus</span>
+          <span class="doc-tag">KMD sisendkäibemaks</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="workflow-step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <h3>Pangaväljavõtte automaatne import</h3>
+        <p>Laadi pangaväljavõte Directosse ühe klikiga — Directo seob laekumised ja väljamaksed automaatselt avatud arvetega. Käsitsi konteerimist pole vaja: süsteem soovitab sobivaid kontosid ja tunneb korduvad tehingud ära. Toetab kõiki Eesti suuremaid panku (Swedbank, SEB, LHV, Coop Pank jt).</p>
+        <div class="step-docs">
+          <span class="doc-tag highlight">🏦 Pangaväljavõtte import</span>
+          <span class="doc-tag">Automaatne arvetega sidumine</span>
+          <span class="doc-tag">Laekumised</span>
+          <span class="doc-tag">Väljamaksed</span>
+          <span class="doc-tag">Konteerimine</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="workflow-step">
+      <div class="step-num">6</div>
+      <div class="step-content">
+        <h3>Palga- ja personaliarvestus</h3>
+        <p>Õpetajate ja töötajate palgaarvestus, puhkused, töölepingud ja TSD deklaratsioon — kõik Directos. Personalimoodul võimaldab hallata tööaegasid ja koostada palgalehed automaatselt.</p>
+        <div class="step-docs">
+          <span class="doc-tag highlight">👥 Palgatabel</span>
+          <span class="doc-tag">TSD deklaratsioon</span>
+          <span class="doc-tag">Puhkusegraafik</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="workflow-step">
+      <div class="step-num">7</div>
+      <div class="step-content">
+        <h3>Finantsaruanded ja maksudeklaratsioonid</h3>
+        <p>Aasta lõpus koostab Directo automaatselt kõik vajaliku: INF 3 koolituskulude deklaratsioon (1. veebruariks), KMD käibedeklaratsioon, bilanss, kasumiaruanne ja pearaamat. Kõik andmed on juba süsteemis — lihtsalt genereeri ja esita.</p>
+        <div class="step-docs">
+          <span class="doc-tag highlight">🏛️ INF 3 deklaratsioon</span>
+          <span class="doc-tag highlight">📊 Bilanss</span>
+          <span class="doc-tag highlight">📈 Kasumiaruanne</span>
+          <span class="doc-tag">Pearaamat</span>
+          <span class="doc-tag">KMD</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FEATURES GRID -->
+<section class="features-section">
+  <div class="features-intro-row">
+    <div>
+      <div class="section-tag">Directo võimalused</div>
+      <h2>Kõik, mida erakool vajab</h2>
+    </div>
+    <p class="section-intro">Directo on Eesti suurima kasutajaskonnaga veebipõhine äritarkvara, mida usaldab üle 4000 ettevõtte ja asutuse.</p>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">📄</div>
+      <h3>Müügi- ja rendilepingud</h3>
+      <p>Sõlmi ja halda lepinguid otse süsteemis. Genereeri lepingust regulaarseid arveid automaatselt — käsitööd pole vaja.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔢</div>
+      <h3>Ressursi-põhine arveldus</h3>
+      <p>Lisa arvele automaatselt toitlustus, ringid ja muud lisateenused — Ressursi kordade põhjal. Üks arve, kõik sees.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🧾</div>
+      <h3>Müügi- ja ostuarved</h3>
+      <p>E-arved, meeldetuletused, laekumised — kõik automatiseeritud. Säästab tunde nädalas.</p>
+    </div>
+    <div class="feature-card accent-card">
+      <div class="feature-icon">🏛️</div>
+      <h3>INF 3 koolituskulude deklaratsioon — automaatselt</h3>
+      <p>Erakoolid on kohustatud esitama INF 3 iga aasta 1. veebruariks. Directo kogub andmed müügiarvetest ja laekumistest automaatselt — valmis XML-failina EMTA-sse üleslaadimiseks.</p>
+      <ul class="feature-list">
+        <li>Koolituse artikli liigi märgistamine</li>
+        <li>Tegeliku maksja (lapsevanema) isikukood</li>
+        <li>Ettemaksude õige kajastamine</li>
+        <li>XML eksport otse EMTA keskkonda</li>
+      </ul>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🏦</div>
+      <h3>Pangaväljavõtte import</h3>
+      <p>Lae pangaväljavõte üles — Directo seob tehingud automaatselt arvetega. Swedbank, SEB, LHV, Coop Pank jt.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <h3>Finantsaruanded</h3>
+      <p>Bilanss, kasumiaruanne, pearaamat ja käibedeklaratsioon — ühe klikiga, alati ajakohased.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🏢</div>
+      <h3>Põhivarad & väikevahendid</h3>
+      <p>Jälgi koolimööblit, IT-seadmeid ja muid varasid. Automaatne kulum ja inventarinimekiri.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">👥</div>
+      <h3>Palga- ja personaliarvestus</h3>
+      <p>TSD, puhkusegraafik ja palgalehed — kõik ühes kohas. Töötajad saavad ise puhkust taotleda MyDirecto kaudu.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">☁️</div>
+      <h3>Veebipõhine ja turvaline</h3>
+      <p>ISO 27001 sertifitseeritud. Ligipääs igalt seadmelt, igalt poolt. Andmed on alati turvaliselt varundatud.</p>
+    </div>
+  </div>
+</section>
+
+<!-- INF3 DEEP DIVE -->
+<section class="inf3-section">
+  <div class="inf3-inner">
+    <div>
+      <div class="section-tag">Oluline kohustus</div>
+      <h2>INF 3 deklaratsioon — lihtsalt ja õigeaegselt</h2>
+      <p class="section-intro">Kõik erakoolid, millel on asjakohase õppekava koolitusluba, peavad esitama Maksu- ja Tolliametile koolituskulude deklaratsiooni INF 3 iga aasta 1. veebruariks.</p>
+      <div class="deadline-box">
+        <div class="deadline-icon">📅</div>
+        <p>Tähtaeg: <strong>1. veebruar</strong> iga aasta. Deklaratsioonil näidatakse füüsiliste isikute poolt eelmisel aastal tasutud koolituskulud. Directos on see protsess <strong>täielikult automatiseeritud</strong>.</p>
+      </div>
+    </div>
+    <div class="inf3-steps">
+      <div class="inf3-step">
+        <div class="inf3-step-icon">1️⃣</div>
+        <div>
+          <h4>Märgi artiklile koolituse liik</h4>
+          <p>Artiklikaardil määra INF 3 liik — Directo teab, milliseid arveid deklaratsioonile kaasata.</p>
+        </div>
+      </div>
+      <div class="inf3-step">
+        <div class="inf3-step-icon">2️⃣</div>
+        <div>
+          <h4>Lisa kliendi- ja lastevanema isikukoodid</h4>
+          <p>Koolitatava (õpilase) ja maksja (lapsevanema) isikukoodid on kliendikaardinl olemas.</p>
+        </div>
+      </div>
+      <div class="inf3-step">
+        <div class="inf3-step-icon">3️⃣</div>
+        <div>
+          <h4>Laekumised registreeritakse automaatselt</h4>
+          <p>Iga laekumise kinnitamisel loob Directo automaatselt INF 3 kirje.</p>
+        </div>
+      </div>
+      <div class="inf3-step">
+        <div class="inf3-step-icon">4️⃣</div>
+        <div>
+          <h4>Genereeri XML ja lae EMTA-sse üles</h4>
+          <p>Aruanne asub Raamat → Aruanded → INF 3 koolituskulud. Lae XML fail otse e-maksuametisse.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ACCOUNTING REPORTS -->
+<section class="accounting-section">
+  <div class="section-tag">Raamatupidamine</div>
+  <h2>Kõik aruanded ühes kohas</h2>
+  <p class="section-intro">Directo raamatupidamismoodul katab kõik erakooli finantsvajadused — igapäevasest arvestusest kuni ametlike deklaratsioonideni.</p>
+  <div class="reports-grid">
+    <div class="report-card">
+      <div class="r-icon">📒</div>
+      <h4>Pearaamat</h4>
+      <p>Kõik kontokanded ühes vaates. Filtreeri perioodi, konto ja objekti järgi.</p>
+      <span class="r-badge">Raamatupidamine</span>
+    </div>
+    <div class="report-card">
+      <div class="r-icon">⚖️</div>
+      <h4>Bilanss</h4>
+      <p>Vara, kohustuste ja omakapitali ülevaade — igal hetkel ajakohane.</p>
+      <span class="r-badge">Finantsaruanded</span>
+    </div>
+    <div class="report-card">
+      <div class="r-icon">📈</div>
+      <h4>Kasumiaruanne</h4>
+      <p>Tulude ja kulude ülevaade. Võrdle perioode, jälgi kasumlikkust.</p>
+      <span class="r-badge">Finantsaruanded</span>
+    </div>
+    <div class="report-card">
+      <div class="r-icon">🏛️</div>
+      <h4>KMD deklaratsioon</h4>
+      <p>Käibemaksudeklaratsioon genereeritakse automaatselt arvetest. Esita otse EMTA-sse.</p>
+      <span class="r-badge">Igakuine</span>
+    </div>
+    <div class="report-card">
+      <div class="r-icon">🎓</div>
+      <h4>INF 3 koolituskulud</h4>
+      <p>Füüsiliste isikute koolituskulude deklaratsioon — automaatselt müügiarvetest.</p>
+      <span class="r-badge">1. veebruar</span>
+    </div>
+    <div class="report-card">
+      <div class="r-icon">💸</div>
+      <h4>Võlgnevuste aruanne</h4>
+      <p>Kes on maksmata arvetega? Automaatsed meeldetuletused lastevanematele.</p>
+      <span class="r-badge">Igapäevane</span>
+    </div>
+    <div class="report-card">
+      <div class="r-icon">🔍</div>
+      <h4>Käibemaks (sisend/väljund)</h4>
+      <p>Sisend- ja väljundkäibemaksu aruanded koos KMD-ga.</p>
+      <span class="r-badge">Igakuine</span>
+    </div>
+    <div class="report-card">
+      <div class="r-icon">📊</div>
+      <h4>Rahavoog</h4>
+      <p>Laekumiste ja väljamaksete ülevaade — planeeri kooli eelarvet täpsemalt.</p>
+      <span class="r-badge">Planeerimine</span>
+    </div>
+  </div>
+</section>
+
+<!-- ASSET MANAGEMENT -->
+<section class="assets-section">
+  <div class="section-tag">Varahaldus</div>
+  <h2>Põhivarad ja väikevahendid</h2>
+  <p class="section-intro">Koolil on palju varasid — mööbel, IT-seadmed, spordiinventar, köögitehnika. Directo põhivarade moodul hoiab kõigel silma peal.</p>
+  <div class="assets-row">
+    <div class="asset-visual">
+      <table class="asset-table">
+        <thead>
+          <tr>
+            <th>Vara</th>
+            <th>Soetusmaksumus</th>
+            <th>Kulum</th>
+            <th>Jääkväärtus</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Arvutid (12 tk) <span class="asset-status status-active">Põhivara</span></td>
+            <td>9 600 €</td>
+            <td>3 200 €</td>
+            <td>6 400 €</td>
+          </tr>
+          <tr>
+            <td>Klassimööbel</td>
+            <td>4 200 €</td>
+            <td>840 €</td>
+            <td>3 360 €</td>
+          </tr>
+          <tr>
+            <td>Projektor <span class="asset-status status-low">Väikevahend</span></td>
+            <td>1 100 €</td>
+            <td>—</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>Köögiseadmed</td>
+            <td>6 800 €</td>
+            <td>2 720 €</td>
+            <td>4 080 €</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <ul class="assets-list">
+      <li>
+        <div class="asset-bullet">🏢</div>
+        <div>
+          <h4>Põhivarad automaatse kulumiga</h4>
+          <p>Määra kulumimeetod ja -periood — Directo arvutab igakuise kulumi automaatselt ning kannab selle raamatupidamisse.</p>
+        </div>
+      </li>
+      <li>
+        <div class="asset-bullet">🖥️</div>
+        <div>
+          <h4>Väikevahendite inventar</h4>
+          <p>IT-seadmed, spordivahendid, tööriistad — kõik registreeritud ja jälgitavad. Inventuur on lihtne ja kiire.</p>
+        </div>
+      </li>
+      <li>
+        <div class="asset-bullet">🔧</div>
+        <div>
+          <h4>Hoolduse ja remondi jälgimine</h4>
+          <p>Märgi varale tehtud remonttööd ja kulud — täielik ajalugu iga vara kohta.</p>
+        </div>
+      </li>
+      <li>
+        <div class="asset-bullet">📋</div>
+        <div>
+          <h4>Rendile saadud varade arvestus</h4>
+          <p>Rendileping koos makseplaaniga — kõik sisse- ja väljamaksed on automaatselt raamatupidamises.</p>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="section-tag">Alusta täna</div>
+  <h2>Valmis lõpetama tabelarvelduse?</h2>
+  <p>Telli tasuta demo — näitame, kuidas Directo sobib täpselt Sinu kooli vajadustega.</p>
+  <div class="cta-btns">
+    <a href="https://directo.ee/telli-demo" class="btn-white" target="_blank">Telli tasuta demo →</a>
+    <a href="https://directo.ee/hinnad" class="btn-outline-white" target="_blank">Vaata hindu</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Directo<span>.</span></div>
+  <p>Directo OÜ · Mõisa 4, 13522 Tallinn · <a href="tel:+3726718578">+372 671 8578</a></p>
+  <p><a href="https://directo.ee" target="_blank">directo.ee</a> · <a href="https://wiki.directo.ee" target="_blank">Abi ja juhendid</a></p>
+</footer>
+
+<script>
+  // Subtle scroll animation
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.workflow-step, .feature-card, .report-card, .inf3-step, .assets-list li').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    observer.observe(el);
+  });
+</script>
+
+</body>
+</html>
