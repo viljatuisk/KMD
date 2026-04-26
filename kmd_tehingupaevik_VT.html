@@ -503,8 +503,39 @@ td.ec:hover{background:var(--blue-lt)!important}
           </div>
         </div>
       </div>
-    
+
+      <div class="bilan-card">
+        <div class="bilan-card-hdr">
+          <span>Kokku vahe</span>
+          <span style="font-size:10px;font-weight:normal;opacity:.8">KMD tasumisele (M+S&#8722;O) vs bilansikontode netovahetus</span>
+        </div>
+        <div class="bilan-card-body">
+          <div class="bilan-result">
+            <div class="bilan-box neutral">
+              <div class="bilan-box-lbl">KMD tasumisele (M+S&#8722;O)</div>
+              <div class="bilan-box-val" id="tot-kmd">&#8212;</div>
+              <div class="bilan-box-sub">aruandest arvutatud</div>
+            </div>
+            <div class="bilan-box neutral">
+              <div class="bilan-box-lbl">Bilanss netovahetus</div>
+              <div class="bilan-box-val" id="tot-bil">&#8212;</div>
+              <div class="bilan-box-sub">m&#252;&#252;k &#8722; sisend</div>
+            </div>
+            <div class="bilan-box neutral" id="tot-vahe-box">
+              <div class="bilan-box-lbl">Kokku vahe</div>
+              <div class="bilan-box-val" id="tot-vahe">&#8212;</div>
+              <div class="bilan-box-sub" id="tot-vahe-lbl">&#8212;</div>
+            </div>
+          </div>
+          <div class="bilan-err-detail" id="tot-err">
+            &#9888; Kokku vahe ei ole null &#8212; kontrolli nii m&#252;&#252;gi-KM kui sisend-KM bilansikontod.
+          </div>
+        </div>
+      </div>
+
     </div>
+  </div>
+</div>
   </div>
 </div>
 
@@ -877,6 +908,23 @@ function calcBilan(){
     document.getElementById('sik-vahe-box').className='bilan-box neutral';
     document.getElementById('sik-vahe-lbl').textContent='—';
     document.getElementById('sik-err').classList.remove('show');
+  }
+  // Kokku vahe
+  const totKmd=mykKmd-sikKmd;
+  document.getElementById('tot-kmd').textContent=fmt(totKmd);
+  if(mb!==null&&sb!==null){
+    const totBil=mb-sb,v=totKmd-totBil,ok=Math.abs(v)<0.01;
+    document.getElementById('tot-bil').textContent=fmt(totBil);
+    document.getElementById('tot-vahe').textContent=fmt(v);
+    document.getElementById('tot-vahe-box').className='bilan-box '+(ok?'ok':'err');
+    document.getElementById('tot-vahe-lbl').textContent=ok?'✓ Kooskõlas':'Erinevus!';
+    document.getElementById('tot-err').classList.toggle('show',!ok);
+  }else{
+    document.getElementById('tot-bil').textContent='—';
+    document.getElementById('tot-vahe').textContent='—';
+    document.getElementById('tot-vahe-box').className='bilan-box neutral';
+    document.getElementById('tot-vahe-lbl').textContent=(mb!==null||sb!==null)?'Sisesta mõlemad':'—';
+    document.getElementById('tot-err').classList.remove('show');
   }
 }
 
