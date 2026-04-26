@@ -147,6 +147,32 @@ td.ec{cursor:pointer;position:relative}
 .col-desc-hidden{display:none}
 .col-toggle-btn{font-size:10px;padding:1px 5px;border:1px solid var(--border);border-radius:var(--r);background:var(--bg2);cursor:pointer;font-family:Arial,sans-serif;color:var(--text2);white-space:nowrap}
 .col-toggle-btn:hover{background:var(--bg3)}
+.bilan-wrap{padding:8px 0;display:flex;flex-direction:column;gap:12px}
+.bilan-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.bilan-card-hdr{background:var(--blue);color:#fff;padding:5px 10px;font-size:11px;font-weight:bold;display:flex;align-items:center;justify-content:space-between}
+.bilan-card-body{padding:10px}
+.bilan-setup{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border2)}
+.bilan-setup label{font-size:10px;font-weight:bold;color:var(--text2);text-transform:uppercase;letter-spacing:.03em;display:block;margin-bottom:2px}
+.bilan-setup input{width:100%;font-size:11px;font-family:Arial,sans-serif;padding:3px 5px;border:1px solid var(--border);border-radius:var(--r);background:var(--bg);color:var(--text)}
+.bilan-setup input:focus{outline:none;border-color:var(--blue)}
+.bilan-hint{font-size:10px;color:var(--text3);margin-top:2px}
+.bilan-result{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.bilan-box{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r);padding:8px 10px;text-align:center}
+.bilan-box-lbl{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.03em;margin-bottom:3px}
+.bilan-box-val{font-size:15px;font-weight:bold;font-family:Arial,sans-serif;color:var(--text)}
+.bilan-box-sub{font-size:10px;color:var(--text3);margin-top:1px}
+.bilan-box.ok{border-color:var(--new-bd);background:var(--new-bg)}
+.bilan-box.ok .bilan-box-val{color:var(--green)}
+.bilan-box.err{border-color:var(--del-bd);background:var(--del-bg)}
+.bilan-box.err .bilan-box-val{color:var(--red)}
+.bilan-box.neutral{border-color:var(--border);background:var(--bg2)}
+.bilan-btn{padding:3px 10px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-size:11px;font-family:Arial,sans-serif;cursor:pointer;font-weight:bold}
+.bilan-btn:hover{background:var(--blue-dk)}
+.bilan-kontod-tag{display:inline-flex;align-items:center;gap:3px;background:var(--blue-lt);border:1px solid var(--blue-mid);border-radius:2px;padding:1px 6px;font-size:10px;color:var(--blue-dk);font-family:monospace;margin:1px}
+.bilan-kontod-x{cursor:pointer;color:var(--blue);margin-left:2px}
+.bilan-kontod-x:hover{color:var(--red)}
+.bilan-err-detail{margin-top:8px;padding:8px;background:var(--del-bg);border:1px solid var(--del-bd);border-radius:var(--r);font-size:11px;color:var(--del-t);display:none}
+.bilan-err-detail.show{display:block}
 td.ec:hover{background:var(--blue-lt)!important}
 .modal-info{background:var(--bg2);padding:10px;margin-bottom:10px;border:1px solid var(--border2);border-radius:var(--r)}
 .modal-info p{font-size:11px;color:var(--text2);margin-bottom:3px;line-height:1.5}
@@ -238,6 +264,7 @@ td.ec:hover{background:var(--blue-lt)!important}
   <div class="tab active" onclick="showTab('journal')">Tehingupäevik</div>
   <div class="tab" onclick="showTab('add')">+ Lisa kirje</div>
   <div class="tab" onclick="showTab('summary')">Koondvaade</div>
+  <div class="tab" onclick="showTab('bilan')">V&#245;rdlus bilansiga</div>
 </div>
 
 <div class="view active" id="view-journal">
@@ -380,12 +407,108 @@ td.ec:hover{background:var(--blue-lt)!important}
 </div>
 
 <div class="view" id="view-summary">
-  <div class="sum-wrap" id="sumContent"></div>
+  <div class="sum-wrap" style="overflow-y:auto;flex:1">
+    <div id="sumContent" style="padding-bottom:8px"></div>
+  </div>
 </div>
+
+<div class="view" id="view-bilan">
+  <div class="sum-wrap" style="overflow-y:auto;flex:1">
+    <div class="bilan-wrap" id="bilanWrap">
+<div class="bilan-card">
+        <div class="bilan-card-hdr">
+          <span>M&#252;&#252;gi-KM v&#245;rdlus bilanssiga</span>
+          <span style="font-size:10px;font-weight:normal;opacity:.8">KMD: M + S vs bilansikontode perioodi muutus</span>
+        </div>
+        <div class="bilan-card-body">
+          <div class="bilan-setup">
+            <div>
+              <label>M&#252;&#252;gi-KM bilansikontod</label>
+              <div style="display:flex;gap:4px">
+                <input id="myk-konto-input" placeholder="nt 2310 v&#245;i 2300-2399" style="flex:1" onkeydown="if(event.key===&quot;Enter&quot;)addKonto(&quot;myk&quot;)"/>
+                <button class="bilan-btn" onclick="addKonto('myk')">Lisa</button>
+              </div>
+              <div class="bilan-hint">&#220;ksik konto (2310) v&#245;i vahemik (2300-2399)</div>
+              <div id="myk-kontod" style="margin-top:5px;display:flex;flex-wrap:wrap;gap:2px"></div>
+            </div>
+            <div>
+              <label>Perioodi muutus bilansikontol (&#8364;)</label>
+              <input id="myk-saldo" type="number" step="0.01" placeholder="ERP-ist: perioodi k&#228;ibej&#228;&#228;k" oninput="calcBilan()"/>
+              <div class="bilan-hint">M&#252;&#252;gi-KM kontode perioodi netok&#228;ive</div>
+            </div>
+          </div>
+          <div class="bilan-result">
+            <div class="bilan-box neutral">
+              <div class="bilan-box-lbl">KMD j&#228;rgi (M + S)</div>
+              <div class="bilan-box-val" id="myk-kmd">&#8212;</div>
+              <div class="bilan-box-sub">aruandest arvutatud</div>
+            </div>
+            <div class="bilan-box neutral">
+              <div class="bilan-box-lbl">Bilanss perioodi muutus</div>
+              <div class="bilan-box-val" id="myk-bil">&#8212;</div>
+              <div class="bilan-box-sub">kasutaja sisestatud</div>
+            </div>
+            <div class="bilan-box neutral" id="myk-vahe-box">
+              <div class="bilan-box-lbl">Vahe (KMD - bilanss)</div>
+              <div class="bilan-box-val" id="myk-vahe">&#8212;</div>
+              <div class="bilan-box-sub" id="myk-vahe-lbl">&#8212;</div>
+            </div>
+          </div>
+          <div class="bilan-err-detail" id="myk-err">
+            &#9888; Vahe ei ole null &#8212; kontrolli kas k&#245;ik m&#252;&#252;giarved on deklareeritud ja kontod &#245;igesti m&#228;rgitud.
+          </div>
+        </div>
+      </div>
+      <div class="bilan-card">
+        <div class="bilan-card-hdr">
+          <span>Sisend-KM v&#245;rdlus bilanssiga</span>
+          <span style="font-size:10px;font-weight:normal;opacity:.8">KMD: O vs bilansikontode perioodi muutus</span>
+        </div>
+        <div class="bilan-card-body">
+          <div class="bilan-setup">
+            <div>
+              <label>Sisend-KM bilansikontod</label>
+              <div style="display:flex;gap:4px">
+                <input id="sik-konto-input" placeholder="nt 2320 v&#245;i 2320-2329" style="flex:1" onkeydown="if(event.key===&quot;Enter&quot;)addKonto(&quot;sik&quot;)"/>
+                <button class="bilan-btn" onclick="addKonto('sik')">Lisa</button>
+              </div>
+              <div class="bilan-hint">&#220;ksik konto (2320) v&#245;i vahemik (2320-2329)</div>
+              <div id="sik-kontod" style="margin-top:5px;display:flex;flex-wrap:wrap;gap:2px"></div>
+            </div>
+            <div>
+              <label>Perioodi muutus bilansikontol (&#8364;)</label>
+              <input id="sik-saldo" type="number" step="0.01" placeholder="ERP-ist: perioodi k&#228;ibej&#228;&#228;k" oninput="calcBilan()"/>
+              <div class="bilan-hint">Sisend-KM kontode perioodi netok&#228;ive</div>
+            </div>
+          </div>
+          <div class="bilan-result">
+            <div class="bilan-box neutral">
+              <div class="bilan-box-lbl">KMD j&#228;rgi (O)</div>
+              <div class="bilan-box-val" id="sik-kmd">&#8212;</div>
+              <div class="bilan-box-sub">aruandest arvutatud</div>
+            </div>
+            <div class="bilan-box neutral">
+              <div class="bilan-box-lbl">Bilanss perioodi muutus</div>
+              <div class="bilan-box-val" id="sik-bil">&#8212;</div>
+              <div class="bilan-box-sub">kasutaja sisestatud</div>
+            </div>
+            <div class="bilan-box neutral" id="sik-vahe-box">
+              <div class="bilan-box-lbl">Vahe (KMD - bilanss)</div>
+              <div class="bilan-box-val" id="sik-vahe">&#8212;</div>
+              <div class="bilan-box-sub" id="sik-vahe-lbl">&#8212;</div>
+            </div>
+          </div>
+          <div class="bilan-err-detail" id="sik-err">
+            &#9888; Vahe ei ole null &#8212; kontrolli kas k&#245;ik ostuarved on deklareeritud ja kontod &#245;igesti m&#228;rgitud.
+          </div>
+        </div>
+      </div>
+    
+    </div>
+  </div>
 </div>
-</div>
-</div>
-</div>
+
+
 
 <div class="overlay" id="editOvl">
   <div class="edit-modal">
@@ -695,6 +818,68 @@ function toggleKomCol(){
 }
 const KMDDESCS={'M_101':'standard- või soodusmääraga maksustatav käive, v.a ettemaks','M_102':'standard- või soodusmääraga maksustatav käive, käive tekib raha saamisest (ettemaks)','M_103':'standard- või soodusmääraga maksustatav käive, kassapõhine käibemaksuarvestus','M_104':'kasuminormi maksustamise kord - kasutatud kauba, originaalkunstiteose ning kollektsiooni- ja antiikeseme edasimüük','M_105':'kasuminormi maksustamise kord - reisibürood','M_106':'kinnisasja, metallijäätmete, väärismetalli ja metalltoodete maksustamise erikord (müüja)','M_201':'Kauba ühendusesisene käive','M_202':'0% määraga maksustatav teise liikmesriigi maksukohustuslasele osutatud teenuste käive, sh ettemaks','M_203':'kauba ühendusesisene käive, võõrandaja kolmnurktehingus','M_204':'Kauba ühendusesisene käive, edasimüüja kolmnurktehingus','M_205':'Kauba ühendusesisene käive, uus transpordivahend','M_206':'Kauba ühendusesisene käive, aktsiisikaup','M_207':'Kauba ühendusesisene käive, tolliagentuur','M_208':'Teises liikmesriigis paigaldatava või kokkupandava kauba maksustatav väärtus','M_209':'kauba eksport, sh ettemaks','M_210':'kauba eksport, käibemaksutagastusega müük reisijale (tax-free)','M_211':'0% määraga maksustatavad muud kaubad, sh ettemaks','M_212':'0% määraga maksustatavad muud teenused, sh ettemaks','M_213':'0% määraga maksustatav kasuminormi maksustamise kord - reisibürood','M_301':'maksuvaba käive','M_302':'ei ole käive','M_107':'kinnisasja, metallijäätmete, väärismetalli ja metalltoodete maksustamise erikord (müüja)','S_101':'kauba ühendusesisene soetamine','S_102':'teise liikmesriigi maksukohustuslaselt saadud teenused','S_103':'kolmnurktehingu tingimustel kauba soetamine','S_104':'muu kauba soetamine ja teenuse saamine','S_105':'erikorra alusel maksustatava kinnisasja, metallijäätmete, väärismetalli ja metalltoodete soetamine','S_106':'kauba ühendusesisene maksuvaba soetamine','O_101':'sisendkäibemaksu summa, mis on seadusega lubatud maha arvata','O_102':'sisendkäibemaksu mahaarvamine osakaupa','O_103':'sisendkäibemaksu osaline mahaarvamine (KMS § 29, § 32, § 33)','O_104':'sisendkäibemaks, arve infot kajastamata','O_106':'impordilt tasutud või tasumisele kuuluv sisendkäibemaks','O_201':'põhivara soetamiselt tasutud või tasumisele kuuluv sisendkäibemaks','O_202':'põhivara soetamiselt tasutud või tasumisele kuuluv sisendkäibemaks, osaline mahaarvamine','O_203':'Imporditud põhivara sisendkäibemaks','O_204':'ühendusesiseselt soetatud (sh kolmnurktehingu tingimustel) põhivara','O_301':'ettevõtluses (100%) kasutatava sõiduauto soetamiselt tasutud või tasumisele kuuluv sisendkäibemaks (Eestist soetatud)','O_302':'ettevõtluses (100%) kasutatava sõiduauto soetamiselt tasutud või tasumisele kuuluv sisendkäibemaks (import)','O_303':'ettevõtluses (100%) kasutatava sõiduauto soetamiselt tasutud või tasumisele kuuluv sisendkäibemaks (ühendusesisene soetamine, sh kolmnurktehingu tingimustel)','O_304':'osaliselt ettevõtluses kasutatava sõiduauto soetamiselt tasutud või tasumisele kuuluv sisendkäibemaks (maksimaalselt 50% sisendkäibemaksust, Eestist soetatud)','O_305':'osaliselt ettevõtluses kasutatava sõiduauto soetamiselt tasutud või tasumisele kuuluv sisendkäibemaks (maksimaalselt 50% sisendkäibemaksust, import)','O_306':'osaliselt ettevõtluses kasutatava sõiduauto soetamiselt tasutud või tasumisele kuuluv sisendkäibemaks (maksimaalselt 50% sisendkäibemaksust, ühendusesisene soetamine, sh kolmnurktehingu tingimustel)','O_307':'ettevõtluses (100%) kasutatava sõiduauto tarbeks kaupade soetamiselt ja teenuste saamiselt tasutud või tasumisele kuuluv käibemaks (Eestist soetatud)','O_308':'ettevõtluses (100%) kasutatava sõiduauto tarbeks kaupade soetamiselt ja teenuste saamiselt tasutud või tasumisele kuuluv käibemaks (import ja ühendusesisene soetamine, sh kolmnurktehingu tingimustel)','O_309':'osaliselt ettevõtluses kasutatava sõiduauto tarbeks kaupade soetamiselt ja teenuste saamiselt tasutud või tasumisele kuuluv käibemaks (maksimaalselt 50% sisendkäibemaksust, Eestist soetatud)','O_310':'osaliselt ettevõtluses kasutatava sõiduauto tarbeks kaupade soetamiselt ja teenuste saamiselt tasutud või tasumisele kuuluv käibemaks (maksimaalselt 50% sisendkäibemaksust, import ja ühendusesisene soetamine, sh kolmnurktehingu tingimustel)','O_401':'sisendkäibemaks, kauba ühendusesisene soetamine, v.a põhivara ja sõiduautode soetamine','O_402':'sisendkäibemaks, teise liikmesriigi maksukohustuslaselt saadud teenused','O_404':'sisendkäibemaks, muu kauba soetamine ja teenuse saamine','O_405':'sisendkäibemaks, erikorra alusel maksustatava kinnisasja, metallijäätmete, väärismetalli ja metalltoodete soetamine','O_501':'sisendkäibemaks, imporditud kauba maksustatava väärtuse muutmisel käibedeklaratsioonil','O_502':'sisendkäibemaks, kaupade maksuladustamise lõpetamisel ilma kauba võõrandamiseta, ajutises aktsiisivabastuses olevate aktsiisikaupade aktsiisilaost välja toimetamine ilma aktsiisikauba võõrandamiseta','O_601':'sisendkäibemaksu korrigeerimise tulemusel sisendkäibemaksu vähenemine/suurenemine','A_101':'standard- või soodusmääraga arvestuslikud kanded'};
 const KMDKOMS={'M_101':'Tavapärane 22% käibe deklareerimine, kus arve saajaks Eesti juriidiline isik','M_102':'Käive on tekkinud osaliselt tasutud ettemaksuarve alusel, st käive on tekkinud 2500 euro ulatuses','M_103':'Kassapõhise käibemaksuarvestuse rakendajale on arve eest osaliselt tasutud 500 eurot, st käive on tekkinud 500 euro ulatuses','M_104':'Kasutatud kauba edasimüük soetusmaksumusega 1500 eurot (marginaal 500 eurot)','M_105':'Reisiteenuse müük füüsilisele isikule marginaliga 45 eurot','M_106':'Nn siseriikliku pöördmaksustamise deklareerimine (müüja)','M_201':'Kauba ühendusesisese käibe deklareerimine','M_202':'Ühendusesisese teenuse käibe deklareerimine','M_203':'Kolmnurktehingus võõrandaja poolt kauba ühendusesisese käibe deklareerimine','M_204':'Kolmnurktehingus edasimüüja poolt käibe deklareerimine kolmnurktehinguna','M_205':'Uue transpordivahendi võõrandamine teise liikmesriigi käibemaksukohustuslasena registreerimata isikule','M_206':'Aktsiisikauba võõrandamine teise liikmesriigi käibemaksukohustuslasena registreerimata isikule','M_207':'Tolliagentuuri poolt deklareeritav kauba ühendusesisene käive kauba importja eest (tolliprotseduuri kood 42)','M_208':'Teises liikmesriigis võõrandaja poolt või eest paigaldatava või kokkupandava kauba võõrandamisel ja paigaldamisel või kokku panemisel tekkinud kauba käive, mis kuulub maksustamisele kauba sihtriigis','M_209':'Kauba eksport','M_210':'Tax free müük reisijale (käibemaksutagastusega müük). Käibemaksutagastuse müügi kviitungile on käibe deklareerimiseks kinnitus saadud.','M_211':'Eestisisene 0% määraga maksustatav kauba käive, kus arve saajaks on Eesti juriidiline isik','M_212':'Eestisisene 0% määraga maksustatav teenuse käive, kus arve saajaks on Eesti juriidiline isik','M_213':'Reisiteenuse müük juriidilisele isikule marginaliga 45 eurot (soetusmaksumus 450 eurot)','M_301':'Maksuvaba käive Eesti juriidilisele isikule','M_302':'Arve sisaldab muu hulgas käibena mittekäsitatavaid tehinguid','M_107':'Arve sisaldab nii siseriikliku pöördmaksustamise erikorra käivet kui ka 22% määraga maksustavat käivet','S_101':'Kauba ühendusesisene soetamine','S_102':'Teise liikmesriigi maksukohustuslaselt saadud teenused','S_103':'Kolmnurktehingu tingimustel kauba soetamine','S_104':'Muu kauba soetamine ja teenuse saamine','S_105':'Erikorra alusel maksustatava kinnisasja, metallijäätmete, väärismetalli ja metalltoodete soetamine (KMS § 411)','S_106':'Kauba ühendusesisene maksuvaba soetamine','O_101':'Sisendkäibemaks, mis on seadusega lubatud maha arvata','O_102':'Sisendkäibemaksu mahaarvamine tasumise ulatuses (50%)','O_103':'Sisendkäibemaksu osaline mahaarvamine proportsiooniga 50%','O_104':'Sisendkäibemaks mahaarvamine arve alusel, millele laieneb kutse- ja ametisaladuse hoidmise kohustus','O_106':'Tollideklaratsiooni alusel tasutud impordi käibemaks','O_201':'Eestist soetatud põhivara, v.a sõiduautod sisendkäibemaks','O_202':'Eestist soetatud põhivara, v.a sõiduautod sisendkäibemaks (osaline mahaarvamine 50%)','O_203':'Imporditud põhivara, v.a sõiduautod sisendkäibemaks (mahaarvamise õiguse ulatuses)','O_204':'Ühendusesiseselt soetatud (sh kolmnurktehingu tingimustel) põhivara, v.a sõiduautod sisendkäibemaks (mahaarvamise õiguse ulatuses)','O_301':'Eestist soetatud nn 100% sõiduauto sisendkäibemaks','O_302':'Imporditud nn 100% sõiduauto sisendkäibemaks','O_303':'Ühendusesiseselt soetatud, sh komnurktehingu tingimustel nn 100% sõiduauto sisendkäibemaks','O_304':'Eestist soetatud nn 50% sõiduauto sisendkäibemaks','O_305':'Imporditud nn 50% sõiduauto sisendkäibemaks','O_306':'Ühendusesiseselt soetatud, sh kolmnurktehingu tingimustel nn 50% sõiduauto sisendkäibemaks','O_307':'Eestist soetatud nn 100% sõiduaoto varuosad sisendkäibemaks','O_308':'Imporditud nn 100% sõiduauto varuosad sisendkäibemaks','O_309':'Eestist soetatud nn 50% sõiduaoto varuosad sisendkäibemaks','O_310':'Imporditud nn 50% sõiduauto varuosad sisendkäibemaks','O_401':'Kauba (v.a põhivara ja sõiduautod) ühendusesisese soetamise sisendkäibemaks','O_402':'Teise liikmesriigi maksukohustuslaselt saadud teenuste sisendkäibemaks','O_404':'Muu teenuse saamise sisendkäibemaks','O_405':'Siseriikliku pöörmaksu sisendkäibemaks','O_501':'Sisendkäibemaks, imporditud kauba maksustatava väärtuse muutmisel käibedeklaratsioonil','O_502':'Sisendkäibemaks, kaupade maksuladustamise lõpetamisel ilma kauba võõrandamiseta; ajutises aktsiisivabastuses olevate aktsiisikaupade aktsiisilaost välja toimetamine ilma aktsiisikauba võõrandamiseta','O_601':'Korrigeerimise tulemusel sisendkäibemaks suureneb','A_101':'22% määraga maksustatav arvestuslik kanne seoses imporditud kauba maksustatava väärtuse muutmisega käibedeklaratsioonil'};
+const bilanKontod={myk:[],sik:[]};
+
+function addKonto(typ){
+  const inp=document.getElementById(typ+'-konto-input');
+  const val=(inp.value||'').trim();
+  if(!val)return;
+  if(!/^\d+(-\d+)?$/.test(val)){inp.style.borderColor='var(--red)';setTimeout(()=>inp.style.borderColor='',1500);return;}
+  if(!bilanKontod[typ].includes(val)){bilanKontod[typ].push(val);renderKontod(typ);calcBilan();}
+  inp.value='';inp.focus();
+}
+function removeKonto(typ,val){
+  bilanKontod[typ]=bilanKontod[typ].filter(k=>k!==val);
+  renderKontod(typ);calcBilan();
+}
+function renderKontod(typ){
+  document.getElementById(typ+'-kontod').innerHTML=bilanKontod[typ].map(k=>
+    '<span class="bilan-kontod-tag">'+k+'<span class="bilan-kontod-x" onclick="removeKonto(\''+typ+'\',\''+k+'\')">&#215;</span></span>'
+  ).join('');
+}
+function calcBilan(){
+  let mKm=0,sKm=0,oKm=0;
+  rows.filter(r=>!r._h&&r.diff!=='del').forEach(r=>{
+    const s=TYPES[r.type]||'',v=parseFloat(r.sum)||0,km=parseFloat(r.km)||0;
+    if(s==='M_1')mKm+=v*km;else if(s==='S_')sKm+=v*km;else if(s==='O_')oKm+=v;
+  });
+  const mykKmd=mKm+sKm,sikKmd=oKm;
+  // Müügi-KM
+  const ms=document.getElementById('myk-saldo').value;
+  const mb=ms!==''?parseFloat(ms)||0:null;
+  document.getElementById('myk-kmd').textContent=fmt(mykKmd);
+  document.getElementById('myk-bil').textContent=mb!==null?fmt(mb):'—';
+  if(mb!==null){
+    const v=mykKmd-mb,ok=Math.abs(v)<0.01;
+    document.getElementById('myk-vahe').textContent=fmt(v);
+    document.getElementById('myk-vahe-box').className='bilan-box '+(ok?'ok':'err');
+    document.getElementById('myk-vahe-lbl').textContent=ok?'✓ Kooskõlas':'Erinevus!';
+    document.getElementById('myk-err').classList.toggle('show',!ok);
+  }else{
+    document.getElementById('myk-vahe').textContent='—';
+    document.getElementById('myk-vahe-box').className='bilan-box neutral';
+    document.getElementById('myk-vahe-lbl').textContent='—';
+    document.getElementById('myk-err').classList.remove('show');
+  }
+  // Sisend-KM
+  const ss=document.getElementById('sik-saldo').value;
+  const sb=ss!==''?parseFloat(ss)||0:null;
+  document.getElementById('sik-kmd').textContent=fmt(sikKmd);
+  document.getElementById('sik-bil').textContent=sb!==null?fmt(sb):'—';
+  if(sb!==null){
+    const v=sikKmd-sb,ok=Math.abs(v)<0.01;
+    document.getElementById('sik-vahe').textContent=fmt(v);
+    document.getElementById('sik-vahe-box').className='bilan-box '+(ok?'ok':'err');
+    document.getElementById('sik-vahe-lbl').textContent=ok?'✓ Kooskõlas':'Erinevus!';
+    document.getElementById('sik-err').classList.toggle('show',!ok);
+  }else{
+    document.getElementById('sik-vahe').textContent='—';
+    document.getElementById('sik-vahe-box').className='bilan-box neutral';
+    document.getElementById('sik-vahe-lbl').textContent='—';
+    document.getElementById('sik-err').classList.remove('show');
+  }
+}
+
 function buildKmkAll(){
   const used=[...new Set(rows.filter(r=>!r._h&&r.diff!=='del').map(r=>r.kmk).filter(Boolean))].sort((a,b)=>+a-+b);
   const opts='<option value="">Kõik KMK-d</option>'+used.map(k=>{const m=getKmk(k);return'<option value="'+k+'">'+k+(m?' — '+m.sel.slice(0,22):'')+'</option>';}).join('');
@@ -768,7 +953,7 @@ function renderTable(){
   else{rows.forEach(r=>{if(r._h)html+='<tr class="hrow"><td colspan="23">'+HEADINGS[r._h]+'</td></tr>';else{html+=rowHtml(r);cnt++;}});}
   document.getElementById('rowCount').textContent=cnt+' kirjet';
   document.getElementById('tableBody').innerHTML=html;
-  calcSummary();updateStatus();
+  calcSummary();updateStatus();calcBilan();
 }
 function calcSummary(){
   let mKm=0,sKm=0,oKm=0;const mByRate={};
@@ -910,9 +1095,10 @@ const KMDNAMES={
   document.getElementById('sumContent').innerHTML=html;
 }
 function showTab(id){
-  document.querySelectorAll('.tab').forEach((t,i)=>{['journal','add','summary'].forEach((n,j)=>t.classList.toggle('active',i===j&&n===id));});
+  document.querySelectorAll('.tab').forEach((t,i)=>{['journal','add','summary','bilan'].forEach((n,j)=>t.classList.toggle('active',i===j&&n===id));});
   document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id==='view-'+id));
   if(id==='summary')renderSummary();
+  if(id==='bilan')calcBilan();
 }
 function toggleMCard(){
   const d=document.getElementById('sc-m-det'),a=document.getElementById('sc-m-arr');
