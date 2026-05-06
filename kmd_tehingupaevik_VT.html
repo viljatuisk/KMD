@@ -140,6 +140,14 @@ tr.hrow-mid:hover td{background:#b8d0e8!important}
 /* Tase 3: M_101, M_102 jne */
 .hrow-type td{background:var(--blue-lt)!important;font-weight:bold;font-size:10px;color:var(--blue-dk);padding:3px 20px;border-top:1px solid var(--border2);max-width:none;white-space:normal;letter-spacing:.03em;text-transform:none}
 tr.hrow-type:hover td{background:#dce9f5!important}
+/* Voldiku nool ja kokkuvõte */
+.fold-arrow{display:inline-block;transition:transform .2s;margin-right:5px;font-size:11px;opacity:.8}
+.fold-arrow.open{transform:rotate(90deg)}
+.hrow-main td{cursor:pointer}
+.hrow-mid td{cursor:pointer}
+.hrow-type td{cursor:pointer}
+.fold-summary{float:right;font-size:10px;font-weight:normal;opacity:.85;font-family:monospace;margin-right:4px}
+tr.fold-hidden{display:none}
 /* Vana hrow säilib */
 .hrow td{background:var(--blue-lt)!important;font-weight:bold;font-size:10px;color:var(--blue-dk);padding:3px 6px;border-top:1px solid var(--blue-mid);text-transform:uppercase;letter-spacing:.04em;max-width:none;white-space:normal}
 tr.hrow:hover td{background:var(--blue-lt)!important}
@@ -336,6 +344,10 @@ td.ec:hover{background:var(--blue-lt)!important}
       <option value="sent">Muutmata</option>
     </select>
     <span class="row-cnt" id="rowCount"></span>
+    <button class="col-toggle-btn" onclick="foldAll(true)" id="btnFoldAll" title="Sulge kõik voldikud">&#9660;&#9660; Sulge kõik</button>
+    <button class="col-toggle-btn" onclick="foldAll(false)" title="Ava kõik voldikud">&#9658;&#9658; Ava kõik</button>
+    <button class="col-toggle-btn" onclick="foldLevel('mid',true)" title="Sulge alamgrupid">&#9660; Sulge alamgrupid</button>
+    <button class="col-toggle-btn" onclick="foldLevel('mid',false)" title="Ava alamgrupid">&#9658; Ava alamgrupid</button>
     <button class="col-toggle-btn" onclick="toggleKomCol()"  title="Peida/näita KMD tüübi kommentaar veerg" id="descToggleBtn" style="opacity:0.5">&#128065; KMD tüübi kommentaar</button>
   </div>
   <div class="tbl-wrap">
@@ -895,7 +907,9 @@ function confirmSend(){
 }
 function markDel(id){
   const r=rows.find(x=>x.id===id);if(!r)return;
-  if(r.diff==='new')rows.splice(rows.indexOf(r),1);else r.diff='del';
+  if(r.diff==='new')rows.splice(rows.indexOf(r),1);else{r.diff='del';delete r.emtaErr;}
+  const stillHasErrors=rows.filter(x=>!x._h&&x.emtaErr&&x.emtaErr.length).length>0;
+  if(!stillHasErrors&&workflowState==='kontrolli_err'){emtaErrors=[];setWorkflowState('sent');}
   buildKmkAll();updateStatus();renderTable();calcSummary();
 }
 function undoDel(id){
@@ -967,7 +981,14 @@ function saveEdit(){
   r.grpkat=document.getElementById('e-grpkat').value;
   r.grpreg=document.getElementById('e-grpreg').value;
   r.grpnimi=document.getElementById('e-grpnimi').value;
-  if(r.diff==='sent')r.diff='mod';
+  if(r.diff==='sent'||r.diff==='mod')r.diff='mod';
+  delete r.emtaErr; // Parandus kustutab EMTA vea sellelt realt
+  // Kui kõik vead on parandatud, lähtesta töövoo olek
+  const stillHasErrors=rows.filter(x=>!x._h&&x.emtaErr&&x.emtaErr.length).length>0;
+  if(!stillHasErrors&&workflowState==='kontrolli_err'){
+    emtaErrors=[];
+    setWorkflowState('sent');
+  }
   closeEditModal();buildKmkAll();renderTable();calcSummary();
 }
 
@@ -1048,6 +1069,54 @@ function calcBilan(){
   }
 }
 
+function foldClick(tr){toggleFold(tr.getAttribute('data-fold'));}
+
+function foldAll(close){
+  // Leia kõik voldikud — main, mid, type
+  document.querySelectorAll('[data-fold]').forEach(tr=>{
+    const id=tr.getAttribute('data-fold');
+    const arr=document.getElementById('arr-'+id);
+    if(!arr)return;
+    const isOpen=arr.classList.contains('open');
+    if(close&&isOpen||!close&&!isOpen){
+      toggleFold(id);
+    }
+  });
+}
+
+function foldLevel(level,close){
+  // Ava/sulge ainult konkreetse taseme voldikud (mid=alamgrupid, type=KMD tüübid)
+  document.querySelectorAll('[data-fold^="'+level+'"]').forEach(tr=>{
+    const id=tr.getAttribute('data-fold');
+    const arr=document.getElementById('arr-'+id);
+    if(!arr)return;
+    const isOpen=arr.classList.contains('open');
+    if(close&&isOpen||!close&&!isOpen){
+      toggleFold(id);
+    }
+  });
+}
+function toggleFold(id){
+  const isMain=id.startsWith('main');
+  const isMid=id.startsWith('mid');
+  const isType=id.startsWith('type');
+  // Leia kõik child elemendid
+  const children=document.querySelectorAll('.fold-'+id);
+  const arr=document.getElementById('arr-'+id);
+  if(!arr)return;
+  const isOpen=arr.classList.contains('open');
+  arr.classList.toggle('open',!isOpen);
+  children.forEach(el=>{
+    el.classList.toggle('fold-hidden',isOpen);
+    // Kui peidame peagruppi, peida ka kõik alamtaseme nooled
+    if(isOpen&&isMain){
+      const subArr=el.querySelector('.fold-arrow');
+      if(subArr)subArr.classList.remove('open');
+    }
+  });
+  // Kui peagrupp avatakse, ära ava automaatselt alamtasemeid mis olid kinni
+}
+
 function buildKmkAll(){
   const used=[...new Set(rows.filter(r=>!r._h&&r.diff!=='del').map(r=>r.kmk).filter(Boolean))].sort((a,b)=>+a-+b);
   const opts='<option value="">Kõik KMK-d</option>'+used.map(k=>{const m=getKmk(k);return'<option value="'+k+'">'+k+(m?' — '+m.sel.slice(0,22):'')+'</option>';}).join('');
@@ -1072,7 +1141,8 @@ function stateBadge(r){
   if(r.diff==='del')return '<span class="sb sb-d">&#10005; Kustutatav</span>';
   return '<span class="sb sb-s">Saadetud</span>';
 }
-function rowHtml(r){
+function rowHtml(r,mId,mdId,tId){
+  const foldCls='fold-child fold-main'+(mId||0)+' fold-mid'+(mdId||0)+' fold-type'+(tId||0);
   const neg=parseFloat(r.sum)<0,sec=TYPES[r.type]||'';
   const kmLbl=sec==='O_'?'':(r.km===''?'':(parseFloat(r.km)*100).toFixed(0)+'%');
   const m=getKmk(r.kmk);
@@ -1087,7 +1157,7 @@ function rowHtml(r){
     else acts+=' <button class="act-btn del" onclick="markDel('+r.id+')" title="Märgi kustutatavaks">&#10005;</button>';
   }
   const hasEmtaErr=r.emtaErr&&r.emtaErr.length;
-  const rc=(hasEmtaErr?'row-emta-err ':'')+'r'+r.diff[0];
+  const rc=(hasEmtaErr?'row-emta-err ':'')+'r'+r.diff[0]+' '+foldCls;
   return '<tr class="'+rc+'">'
     +'<td class="muted">'+(r.nr||'')+'</td>'
     +'<td>'+(hasEmtaErr?'<span class="emta-err-badge" title="'+r.emtaErr.join('; ')+'">&#9888; EMTA viga</span>':stateBadge(r))+'</td>'
@@ -1120,27 +1190,60 @@ function renderTable(){
   let html='',cnt=0;
   if(flt){rows.filter(r=>!r._h&&matchRow(r)).forEach(r=>{html+=rowHtml(r);cnt++;});}
   else{
-    // 3-taseme rühmitus: peagrupp (M/S/O/A) → alamgrupp (std/null/...) → KMD tüüp
-    let curMain=null, curMid=null, curType=null;
+    // 3-taseme voldik: peagrupp (M/S/O/A) → alamgrupp → KMD tüüp
+    // Arvuta kokkuvõtted iga taseme jaoks
+    const mainStats={},midStats={},typeStats={};
+    let curG=null,curM=null,curT=null;
     rows.forEach(r=>{
       if(r._h){
-        // Tase 2 vahepealkirjad
+        if(r._h.startsWith('main_'))curG=r._h;
+        else curM=r._h;
+        curT=null;
+      } else if(r.diff!=='del') {
+        const v=parseFloat(r.sum)||0,km=parseFloat(r.km)||0;
+        const sec=TYPES[r.type]||'';
+        const vat=(sec==='O_')?0:v*km;
+        if(curG){if(!mainStats[curG])mainStats[curG]={n:0,sum:0,vat:0};mainStats[curG].n++;mainStats[curG].sum+=v;mainStats[curG].vat+=vat;}
+        if(curM){if(!midStats[curM])midStats[curM]={n:0,sum:0,vat:0};midStats[curM].n++;midStats[curM].sum+=v;midStats[curM].vat+=vat;}
+        const tk=(curG||'')+'|'+(curM||'')+'|'+r.type;
+        if(!typeStats[tk])typeStats[tk]={n:0,sum:0,vat:0,type:r.type};typeStats[tk].n++;typeStats[tk].sum+=v;typeStats[tk].vat+=vat;
+      }
+    });
+
+    function fmtS(v){return(parseFloat(v)||0).toLocaleString('et-EE',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+    let curMain=null,curMid=null,curType=null;
+    let mainId=0,midId=0,typeId=0;
+    rows.forEach(r=>{
+      if(r._h){
         const main=r._h.startsWith('main_')?r._h:null;
         if(main){
           curMain=main;curMid=null;curType=null;
-          html+='<tr class="hrow-main"><td colspan="23">'+HEADINGS[main]+'</td></tr>';
+          mainId++;
+          const st=mainStats[main]||{n:0,sum:0,vat:0};
+          const summ='<span class="fold-summary">'+st.n+' kirjet &nbsp;|&nbsp; Dekl. summa: '+fmtS(st.sum)+' &euro; &nbsp;|&nbsp; KM: '+fmtS(st.vat)+' &euro;</span>';
+          html+='<tr class="hrow-main" onclick="foldClick(this)" data-fold="main'+mainId+'">'
+            +'<td colspan="23"><span class="fold-arrow open" id="arr-main'+mainId+'">&#9654;</span>'+HEADINGS[main]+summ+'</td></tr>';
         } else {
           curMid=r._h;curType=null;
-          html+='<tr class="hrow-mid"><td colspan="23">'+HEADINGS[r._h]+'</td></tr>';
+          midId++;
+          const st=midStats[r._h]||{n:0,sum:0,vat:0};
+          const summ='<span class="fold-summary">'+st.n+' kirjet &nbsp;|&nbsp; Dekl. summa: '+fmtS(st.sum)+' &euro; &nbsp;|&nbsp; KM: '+fmtS(st.vat)+' &euro;</span>';
+          html+='<tr class="hrow-mid fold-child fold-main'+mainId+'" onclick="foldClick(this)" data-fold="mid'+midId+'">'
+            +'<td colspan="23"><span class="fold-arrow open" id="arr-mid'+midId+'">&#9654;</span>'+HEADINGS[r._h]+summ+'</td></tr>';
         }
       } else {
-        // Tase 3: KMD tüübi päis kui tüüp muutub
         if(r.type!==curType){
           curType=r.type;
+          typeId++;
+          const tk=(curMain||'')+'|'+(curMid||'')+'|'+r.type;
+          const st=typeStats[tk]||{n:0,sum:0,vat:0};
           const lbl=TYPE_LABELS[r.type]||r.type;
-          html+='<tr class="hrow-type"><td colspan="23">'+lbl+'</td></tr>';
+          const summ='<span class="fold-summary">'+st.n+' kirjet &nbsp;|&nbsp; '+fmtS(st.sum)+' &euro; &nbsp;|&nbsp; KM: '+fmtS(st.vat)+' &euro;</span>';
+          html+='<tr class="hrow-type fold-child fold-main'+mainId+' fold-mid'+midId+'" onclick="foldClick(this)" data-fold="type'+typeId+'">'
+            +'<td colspan="23"><span class="fold-arrow open" id="arr-type'+typeId+'">&#9654;</span>'+lbl+summ+'</td></tr>';
         }
-        html+=rowHtml(r);cnt++;
+        html+=rowHtml(r,mainId,midId,typeId);cnt++;
       }
     });
   }
@@ -1396,7 +1499,7 @@ function setWorkflowState(state){
   document.getElementById('btnKontrolli').disabled = !['sent','kontrolli_ok','kontrolli_err'].includes(state);
   document.getElementById('btnKinnita').disabled = !['kontrolli_ok','kinnitatud'].includes(state) || state==='kinnitatud';
   // Staatus tekst
-  const txt={idle:'',validated:'&#10003; Andmed valideeritud',sent:'&#9650; Andmed saadetud EMTA-le — oota tagasisideraporti',kontrolli_ok:'&#10003; Tagasisideraport: vead puuduvad — valmis kinnitamiseks',kontrolli_err:'&#9888; Tagasisideraport: leiti vigu — paranda ja saada uuesti',kinnitatud:'&#128274; KMD kinnitatud PIN2-ga'};
+  const txt={idle:'',validated:'&#10003; Andmed valideeritud',sent:'&#9650; Andmed saadetud EMTA-le — oota tagasisideraporti',kontrolli_ok:'&#10003; Tagasisideraport: vead puuduvad — valmis kinnitamiseks',kontrolli_err:'&#9888; Tagasisideraport: leiti vigu — paranda vead ja vajuta <strong>Saada uuesti EMTA-le</strong>',kinnitatud:'&#128274; KMD kinnitatud PIN2-ga'};
   document.getElementById('wf-status-txt').innerHTML=txt[state]||'';
 }
 
