@@ -887,7 +887,8 @@ function confirmSend(){
   const t=(document.getElementById('flt-to').value||activeFilters.to||'').trim();
   lastSentPeriod=(f&&t)?f+' – '+t:(f||t||'');
   rows=rows.filter(r=>r._h||r.diff!=='del');
-  rows.filter(r=>!r._h).forEach(r=>r.diff='sent');
+  rows.filter(r=>!r._h).forEach(r=>{r.diff='sent';delete r.emtaErr;});
+  emtaErrors=[];
   closeSendModal();buildKmkAll();updateStatus();renderTable();calcSummary();
   setWorkflowState('sent');
   alert('Kõik andmed saadetud EMTA-le!\n\nOota EMTA tagasisideraporti, seejärel vajuta "Kontrolli".');
