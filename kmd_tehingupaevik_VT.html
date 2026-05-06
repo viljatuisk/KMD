@@ -46,6 +46,31 @@ html,body{height:100%;font-family:Arial,sans-serif;font-size:12px;background:var
 .btn-send:disabled{background:#9cb890;border-color:#9cb890;cursor:not-allowed}
 .btn-primary{background:var(--blue);color:#fff;border-color:var(--blue)}
 .btn-primary:hover{background:var(--blue-dk)}
+.btn-kontrolli{background:#7c3aed;color:#fff;border-color:#7c3aed}
+.btn-kontrolli:hover{background:#6d28d9}
+.btn-kontrolli:disabled{background:#c4b5fd;border-color:#c4b5fd;cursor:not-allowed}
+.btn-kinnita{background:#b45309;color:#fff;border-color:#b45309}
+.btn-kinnita:hover{background:#92400e}
+.btn-kinnita:disabled{background:#d4b483;border-color:#d4b483;cursor:not-allowed}
+.workflow-bar{display:flex;align-items:center;gap:6px;padding:4px 10px;background:#f8f9fb;border-bottom:1px solid var(--border2);flex-shrink:0;flex-wrap:wrap}
+.wf-step{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text3)}
+.wf-step.active{color:var(--text);font-weight:bold}
+.wf-step.done{color:var(--green)}
+.wf-step.error{color:var(--red)}
+.wf-arrow{font-size:10px;color:var(--border);margin:0 2px}
+.wf-dot{width:6px;height:6px;border-radius:50%;background:var(--border);display:inline-block;margin-right:3px}
+.wf-step.active .wf-dot{background:var(--blue)}
+.wf-step.done .wf-dot{background:var(--green)}
+.wf-step.error .wf-dot{background:var(--red)}
+/* EMTA tagasiside read */
+tr.row-emta-err td{background:#fef2f2!important;border-left:3px solid var(--red)}
+tr.row-emta-err:hover td{background:#fee2e2!important}
+.emta-err-badge{display:inline-flex;align-items:center;gap:3px;background:#fef2f2;border:1px solid var(--del-bd);border-radius:2px;padding:1px 6px;font-size:10px;color:var(--red);font-weight:bold}
+/* PIN2 modal */
+.pin2-input{width:100%;font-size:18px;letter-spacing:6px;text-align:center;padding:8px;border:2px solid var(--blue);border-radius:var(--r);font-family:monospace}
+.pin2-dots{display:flex;justify-content:center;gap:8px;margin:10px 0}
+.pin2-dot{width:12px;height:12px;border-radius:50%;background:var(--border2);border:1px solid var(--border)}
+.pin2-dot.filled{background:var(--blue-dk);border-color:var(--blue-dk)}
 .chips-row{display:flex;align-items:center;gap:5px;padding:3px 0;min-height:24px;flex-wrap:wrap}
 .fchip{display:inline-flex;align-items:center;gap:3px;background:var(--blue-lt);border:1px solid var(--blue-mid);border-radius:2px;padding:1px 6px;font-size:11px;color:var(--blue-dk)}
 .fchip-x{cursor:pointer;margin-left:2px;font-size:12px;line-height:1;color:var(--blue)}
@@ -106,6 +131,16 @@ td.neg{color:var(--red)}
 tr.rn td{background:var(--new-bg)!important}
 tr.rm td{background:var(--mod-bg)!important}
 tr.rd td{background:var(--del-bg)!important;text-decoration:line-through;color:var(--text3)!important}
+/* Tase 1: M / S / O / A peagrupp */
+.hrow-main td{background:var(--blue)!important;font-weight:bold;font-size:12px;color:#fff;padding:5px 8px;border-top:2px solid var(--blue-dk);max-width:none;white-space:normal;letter-spacing:.02em}
+tr.hrow-main:hover td{background:var(--blue-dk)!important}
+/* Tase 2: std / null / maks / sega jne */
+.hrow-mid td{background:var(--blue-mid)!important;font-weight:bold;font-size:11px;color:var(--blue-dk);padding:4px 12px;border-top:1px solid var(--blue-mid);max-width:none;white-space:normal;letter-spacing:.02em}
+tr.hrow-mid:hover td{background:#b8d0e8!important}
+/* Tase 3: M_101, M_102 jne */
+.hrow-type td{background:var(--blue-lt)!important;font-weight:bold;font-size:10px;color:var(--blue-dk);padding:3px 20px;border-top:1px solid var(--border2);max-width:none;white-space:normal;letter-spacing:.03em;text-transform:none}
+tr.hrow-type:hover td{background:#dce9f5!important}
+/* Vana hrow säilib */
 .hrow td{background:var(--blue-lt)!important;font-weight:bold;font-size:10px;color:var(--blue-dk);padding:3px 6px;border-top:1px solid var(--blue-mid);text-transform:uppercase;letter-spacing:.04em;max-width:none;white-space:normal}
 tr.hrow:hover td{background:var(--blue-lt)!important}
 .pill{display:inline-block;font-size:10px;padding:0 5px;border-radius:2px;font-weight:bold;white-space:nowrap}
@@ -216,10 +251,23 @@ td.ec:hover{background:var(--blue-lt)!important}
     <button class="tog-btn" id="togBtn" onclick="toggleFp()">&#9664; Filtrid</button>
     <span class="rpt-title">KMD &middot; Käibemaksudeklaratsioon</span>
     <div class="rpt-actions">
-      <button class="btn" onclick="openValidate()">Valideeri</button>
-      <button class="btn" onclick="openXml()">XML</button>
-      <button class="btn btn-send" id="btnSend" onclick="openSendModal()" disabled>Saada uuesti EMTA-le &uarr;</button>
+      <button class="btn" onclick="openValidate()" id="btnValideeri" title="Kontrolli andmed EMTA ärireeglite vastu enne saatmist">&#10003; Valideeri</button>
+      <button class="btn btn-send" id="btnSend" onclick="openSendModal()" disabled title="Saada andmed EMTA-le (T+R loogika)">Saada EMTA-le &uarr;</button>
+      <button class="btn btn-kontrolli" id="btnKontrolli" onclick="openKontrolliModal()" disabled title="Lae EMTA tagasisideraport ja kontrolli vigu">&#128269; Kontrolli</button>
+      <button class="btn btn-kinnita" id="btnKinnita" onclick="openPin2Modal()" disabled title="Kinnita KMD EMTA-s ID-kaardi PIN2-ga">&#128274; Kinnita PIN2</button>
+      <button class="btn" onclick="openXml()" title="Genereeri XML fail">XML</button>
     </div>
+  </div>
+  <!-- Töövoo olek -->
+  <div class="workflow-bar" id="workflowBar">
+    <span class="wf-step" id="wf1"><span class="wf-dot"></span>Valideeri</span>
+    <span class="wf-arrow">&#8250;</span>
+    <span class="wf-step" id="wf2"><span class="wf-dot"></span>Saada EMTA-le</span>
+    <span class="wf-arrow">&#8250;</span>
+    <span class="wf-step" id="wf3"><span class="wf-dot"></span>Tagasisideraport</span>
+    <span class="wf-arrow">&#8250;</span>
+    <span class="wf-step" id="wf4"><span class="wf-dot"></span>Kinnita PIN2</span>
+    <span id="wf-status-txt" style="margin-left:8px;font-size:10px;color:var(--text3)"></span>
   </div>
   <div class="chips-row" id="chipsRow"><span class="no-flt">Filtrid puuduvad</span></div>
   <div class="status-row">
@@ -503,39 +551,8 @@ td.ec:hover{background:var(--blue-lt)!important}
           </div>
         </div>
       </div>
-
-      <div class="bilan-card">
-        <div class="bilan-card-hdr">
-          <span>Kokku vahe</span>
-          <span style="font-size:10px;font-weight:normal;opacity:.8">KMD tasumisele (M+S&#8722;O) vs bilansikontode netovahetus</span>
-        </div>
-        <div class="bilan-card-body">
-          <div class="bilan-result">
-            <div class="bilan-box neutral">
-              <div class="bilan-box-lbl">KMD tasumisele (M+S&#8722;O)</div>
-              <div class="bilan-box-val" id="tot-kmd">&#8212;</div>
-              <div class="bilan-box-sub">aruandest arvutatud</div>
-            </div>
-            <div class="bilan-box neutral">
-              <div class="bilan-box-lbl">Bilanss netovahetus</div>
-              <div class="bilan-box-val" id="tot-bil">&#8212;</div>
-              <div class="bilan-box-sub">m&#252;&#252;k &#8722; sisend</div>
-            </div>
-            <div class="bilan-box neutral" id="tot-vahe-box">
-              <div class="bilan-box-lbl">Kokku vahe</div>
-              <div class="bilan-box-val" id="tot-vahe">&#8212;</div>
-              <div class="bilan-box-sub" id="tot-vahe-lbl">&#8212;</div>
-            </div>
-          </div>
-          <div class="bilan-err-detail" id="tot-err">
-            &#9888; Kokku vahe ei ole null &#8212; kontrolli nii m&#252;&#252;gi-KM kui sisend-KM bilansikontod.
-          </div>
-        </div>
-      </div>
-
+    
     </div>
-  </div>
-</div>
   </div>
 </div>
 
@@ -601,6 +618,68 @@ td.ec:hover{background:var(--blue-lt)!important}
   </div>
 </div>
 
+<!-- Kontrolli modal (EMTA tagasisideraport) -->
+<div class="overlay" id="kontrolliOvl">
+  <div class="modal" style="max-width:500px">
+    <h2>&#128269; EMTA tagasisideraport</h2>
+    <div id="ke-loading" style="text-align:center;padding:24px 0">
+      <div style="font-size:13px;color:var(--text2);margin-bottom:8px">&#9203; Pärin EMTA-lt tagasisideraporti X-tee kaudu...</div>
+      <div style="font-size:11px;color:var(--text3)">Directo &#8594; X-tee &#8594; EMTA</div>
+    </div>
+    <div id="ke-result" style="display:none">
+      <div id="ke-result-ok" style="display:none;text-align:center;padding:16px 0">
+        <div style="font-size:28px;margin-bottom:8px">&#10003;</div>
+        <div style="font-size:13px;font-weight:bold;color:var(--green);margin-bottom:4px">Tagasisideraport: vead puuduvad</div>
+        <div style="font-size:11px;color:var(--text2)">EMTA on andmed vastu v&#245;tnud, vigu ei tuvastatud.</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:8px">KMD on valmis kinnitamiseks PIN2-ga.</div>
+      </div>
+      <div id="ke-result-err" style="display:none">
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--del-bg);border:1px solid var(--del-bd);border-radius:var(--r);margin-bottom:10px">
+          <span style="font-size:18px">&#9888;</span>
+          <div>
+            <div style="font-size:12px;font-weight:bold;color:var(--red)">Tagasisideraport: leiti vigu</div>
+            <div style="font-size:11px;color:var(--text2)">EMTA tuvastas andmetes vigu. Vigased read on aruandes punasega m&#228;rgitud.</div>
+          </div>
+        </div>
+        <div id="ke-list" style="max-height:220px;overflow-y:auto;border:1px solid var(--border2);border-radius:var(--r)"></div>
+        <div style="font-size:10px;color:var(--text3);margin-top:8px">Paranda vead ja saada andmed uuesti EMTA-le.</div>
+      </div>
+    </div>
+    <div class="modal-btns" style="margin-top:12px">
+      <button class="btn" onclick="closeKontrolliModal()">Sulge</button>
+      <button class="btn btn-primary" id="ke-goto-btn" onclick="closeKontrolliModal();showTab('journal')" style="display:none">N&#228;ita vigased read &#8594;</button>
+    </div>
+  </div>
+</div>
+
+<!-- PIN2 modal -->
+<div class="overlay" id="pin2Ovl">
+  <div class="modal" style="max-width:380px;text-align:center">
+    <h2 style="text-align:center">&#128274; KMD kinnitamine PIN2-ga</h2>
+    <p style="font-size:11px;color:var(--text2);margin-bottom:12px">Sisesta ID-kaardi PIN2 KMD kinnitamiseks EMTA-s. Kinnitus on lõplik ja pöördumatu.</p>
+    <div style="background:var(--bg2);border-radius:var(--r);padding:10px;margin-bottom:12px;font-size:11px;color:var(--text2);text-align:left">
+      <div style="display:flex;justify-content:space-between;margin-bottom:3px"><span>Periood:</span><strong id="pin2-period">—</strong></div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:3px"><span>Viimane saatmine:</span><strong id="pin2-sent">—</strong></div>
+      <div style="display:flex;justify-content:space-between"><span>EMTA tagasiside:</span><strong id="pin2-status" style="color:var(--green)">—</strong></div>
+    </div>
+    <label style="font-size:11px;font-weight:bold;color:var(--text2);display:block;margin-bottom:6px">PIN2 (4-6 numbrit)</label>
+    <input type="password" id="pin2-input" class="pin2-input" maxlength="6" placeholder="&#9679;&#9679;&#9679;&#9679;" oninput="updatePin2Dots()" onkeydown="if(event.key===&quot;Enter&quot;)confirmPin2()"/>
+    <div class="pin2-dots" id="pin2-dots">
+      <div class="pin2-dot" id="pd0"></div>
+      <div class="pin2-dot" id="pd1"></div>
+      <div class="pin2-dot" id="pd2"></div>
+      <div class="pin2-dot" id="pd3"></div>
+      <div class="pin2-dot" id="pd4"></div>
+      <div class="pin2-dot" id="pd5"></div>
+    </div>
+    <p style="font-size:10px;color:var(--text3);margin-bottom:12px">&#9432; Prototüübis PIN2 tegelikku kinnitust ei saada — see on UI demonstratsioon.</p>
+    <div class="modal-btns" style="justify-content:center;gap:8px">
+      <button class="btn" onclick="closePin2Modal()">Tühista</button>
+      <button class="btn btn-kinnita" onclick="confirmPin2()" id="pin2-confirm-btn" disabled>&#128274; Kinnita</button>
+    </div>
+  </div>
+</div>
+
 <div class="overlay" id="sendOvl">
   <div class="modal">
     <h2>Saada andmed uuesti EMTA-le</h2>
@@ -623,7 +702,56 @@ td.ec:hover{background:var(--blue-lt)!important}
 <script>
 const TYPES={M_101:'M_1',M_102:'M_1',M_103:'M_1',M_104:'M_1',M_105:'M_1',M_201:'M_2',M_202:'M_2',M_203:'M_2',M_204:'M_2',M_205:'M_2',M_206:'M_2',M_207:'M_2',M_208:'M_2',M_209:'M_2',M_210:'M_2',M_211:'M_2',M_212:'M_2',M_301:'M_3',M_302:'M_3',M_303:'M_3',M_304:'M_3',S_101:'S_',S_102:'S_',S_103:'S_',S_104:'S_',S_105:'S_',S_106:'S_',O_101:'O_',O_102:'O_',O_103:'O_',O_104:'O_',O_106:'O_',O_201:'O_',O_202:'O_',O_203:'O_',O_204:'O_',O_301:'O_',O_302:'O_',O_303:'O_',O_304:'O_',O_305:'O_',O_306:'O_',O_307:'O_',O_308:'O_',O_309:'O_',O_310:'O_',O_401:'O_',O_402:'O_',O_403:'O_',O_404:'O_',O_405:'O_',O_501:'O_',O_502:'O_',O_601:'O_',A_101:'A_'};
 const KMK=[{kood:'1',sel:'Siseriiklik 22% müük'},{kood:'2',sel:'Siseriiklik 9% müük'},{kood:'3',sel:'Kassapõhine 22%'},{kood:'4',sel:'Kasuminorm 9%'},{kood:'5',sel:'Kasuminorm 22%'},{kood:'6',sel:'Reisiteenus kasuminorm'},{kood:'7',sel:'Pöördmaks müüja'},{kood:'8',sel:'Kauba üh.sis. 0%'},{kood:'9',sel:'Teenus teise EL MK 0%'},{kood:'10',sel:'Eksport 0%'},{kood:'11',sel:'0% muud kaubad'},{kood:'12',sel:'Maksuvaba käive'},{kood:'13',sel:'Sisend 22%'},{kood:'14',sel:'Sisend 9%'},{kood:'15',sel:'Kassapõhine sisend 22%'},{kood:'16',sel:'Osaline mahaarvamine'},{kood:'17',sel:'Import sisend-KM'},{kood:'18',sel:'Põhivara sisend-KM (EE)'},{kood:'19',sel:'Sõiduauto 100% sisend-KM'},{kood:'20',sel:'Sõiduauto 50% sisend-KM'},{kood:'21',sel:'Üh.sis. soetamine (S)'},{kood:'22',sel:'Teenused teise EL MK (S)'},{kood:'23',sel:'Pöördmaks ostja'},{kood:'24',sel:'Sisend-KM korrigeerimine'},{kood:'25',sel:'Arvestuslik kanne 22%'}];
-const HEADINGS={std:'Standard- või soodusmääraga maksustatavad tehingud',null:'Nullmääraga maksustatavad tehingud',maks:'Maksuvabad ja käibena mittekäsitatavad tehingud',sega:'Segaarved',grupp:'Käibemaksugrupp',kreedi:'Kreeditarved',lootu:'Lootusetud nõuded',poord:'Pöördmaksustatavad soetused',sisend:'Sisendkäibemaksu mahaarvamine',siskreed:'Sisendkäibemaksu mahaarvamine (kreeditarved)',phiv:'Sisendkäibemaksu mahaarvamine põhivara soetamiselt',auto:'Sisendkäibemaksu mahaarvamine sõiduauto soetamiselt',poordos:'Sisendkäibemaksu mahaarvamine pöördmaksustatavatelt soetustelt',arves:'Sisendkäibemaksu mahaarvamine arvestuslikelt kannetelt',korr:'Sisendkäibemaksu mahaarvamise korrigeerimised',arvkand:'Arvestuslikud kanded'};
+const HEADINGS={
+  // Peagrupid (tase 1)
+  main_M:'M — Müük',main_S:'S — Pöördmaksustav soetus',main_O:'O — Ost / Sisendkäibemaks',main_A:'A — Arvestuslikud kanded',
+  // Alamgrupid (tase 2)
+  std:'Standard- või soodusmääraga maksustatavad tehingud',
+  null:'Nullmääraga maksustatavad tehingud',
+  maks:'Maksuvabad ja käibena mittekäsitatavad tehingud',
+  tehpart:'Tehingupartneri ja arvega, sh segaarvega seotud erisused',kreedi:'Kreeditarved',lootu:'Lootusetud nõuded',
+  poord:'Pöördmaksustatavad soetused',
+  sisend:'Sisendkäibemaksu mahaarvamine',sistepart:'Sisendkäibemaksu mahaarvamine (tehingupartneri ja arvega, sh segaarvega seotud erisused)',siskreed:'Sisendkäibemaksu mahaarvamine (kreeditarved)',sislootu:'Sisendkäibemaksu mahaarvamine (lootusetud nõuded)',
+  phiv:'Sisendkäibemaksu mahaarvamine põhivara soetamiselt',
+  auto:'Sisendkäibemaksu mahaarvamine sõiduauto soetamiselt ja sõiduauto tarbeks kaupade soetamiselt ja teenuste saamiselt',
+  poordos:'Sisendkäibemaksu mahaarvamine pöördmaksustatavatelt soetustelt',
+  arves:'Sisendkäibemaksu mahaarvamine arvestuslikelt kannetelt',
+  korr:'Sisendkäibemaksu mahaarvamise korrigeerimised',
+  arvkand:'Arvestuslikud kanded',
+};
+// KMD tüübi pealkiri (tase 3) — lühike versioon
+const TYPE_LABELS={
+  M_101:'M_101 — Standard/soodusmääraga maksustatav käive',M_102:'M_102 — Kassapõhine käive',
+  M_103:'M_103 — Kasuminorm (kasutatud kaup)',M_104:'M_104 — Kasuminorm (reisibüroo)',
+  M_105:'M_105 — Kinnisasi/metall (müüja)',
+  M_201:'M_201 — Kauba ühendusesisene käive',M_202:'M_202 — Teenus teise LR MK-le',
+  M_203:'M_203 — Kolmnurk (võõrandaja)',M_204:'M_204 — Kolmnurk (edasimüüja)',
+  M_205:'M_205 — Uus transpordivahend',M_206:'M_206 — Aktsiisikaup',
+  M_207:'M_207 — Tolliagentuur',M_208:'M_208 — Eksport',M_209:'M_209 — Eksport tax-free',
+  M_210:'M_210 — 0% muud kaubad',M_211:'M_211 — 0% muud teenused',
+  M_212:'M_212 — Kasuminorm (reisibüroo 0%)',
+  M_301:'M_301 — Maksuvaba käive',M_302:'M_302 — Ei ole käive',
+  M_303:'M_303 — Maagaas/elekter eksport',M_304:'M_304 — Paigaldatav kaup teises LR',
+  S_101:'S_101 — Kauba ühendusesisene soetamine',S_102:'S_102 — Teenused teise LR MK-lt',
+  S_103:'S_103 — Kolmnurk (soetamine)',S_104:'S_104 — Muu kaup/teenus',
+  S_105:'S_105 — Kinnisasi/metall (ostja)',S_106:'S_106 — Maksuvaba ühendusesisene soetamine',
+  O_101:'O_101 — Lubatud sisend-KM',O_102:'O_102 — Mahaarvamine osakaupa',
+  O_103:'O_103 — Osaline mahaarvamine',O_104:'O_104 — Kassapõhine sisend-KM',
+  O_106:'O_106 — Impordi sisend-KM',
+  O_201:'O_201 — Põhivara (EE)',O_202:'O_202 — Põhivara osaline',
+  O_203:'O_203 — Põhivara (import)',O_204:'O_204 — Põhivara (EU)',
+  O_301:'O_301 — Sõiduauto 100% (EE)',O_302:'O_302 — Sõiduauto 100% (import)',
+  O_303:'O_303 — Sõiduauto 100% (EU)',O_304:'O_304 — Sõiduauto 50% (EE)',
+  O_305:'O_305 — Sõiduauto 50% (import)',O_306:'O_306 — Sõiduauto 50% (EU)',
+  O_307:'O_307 — Sõiduauto 100% varuosad (EE)',O_308:'O_308 — Sõiduauto 100% varuosad (import/EU)',
+  O_309:'O_309 — Sõiduauto 50% varuosad (EE)',O_310:'O_310 — Sõiduauto 50% varuosad (import/EU)',
+  O_401:'O_401 — Ühendusesisene kaup (pöördmaks)',O_402:'O_402 — Teise LR MK teenused (pöördmaks)',
+  O_403:'O_403 — Kolmnurk (pöördmaks)',O_404:'O_404 — Muu kaup/teenus (pöördmaks)',
+  O_405:'O_405 — Kinnisasi/metall (pöördmaks)',
+  O_501:'O_501 — Impordi maksustatava väärtuse muutus',O_502:'O_502 — Maksuladustamine',
+  O_601:'O_601 — Sisend-KM korrigeerimine',
+  A_101:'A_101 — Arvestuslik kanne',
+};
 function getKmk(k){return KMK.find(m=>m.kood===String(k));}
 function pCls(t){const s=TYPES[t]||'';if(s==='M_1')return 'p-m1';if(s==='M_2')return 'p-m2';if(s==='M_3')return 'p-m3';if(s==='S_')return 'p-s';if(s==='O_')return 'p-o';return 'p-a';}
 function fmt(n){const v=parseFloat(n)||0;return v.toLocaleString('et-EE',{minimumFractionDigits:2,maximumFractionDigits:2});}
@@ -633,16 +761,17 @@ let activeFilters={from:'01.03.2026',to:'30.03.2026',reg:'10000001',sec:'',kmk:'
 let lastSentPeriod='';
 let fpOpen=true;
 let rows=[
+  {_h:'main_M'},
   {_h:'std'},
+  {id:51,nr:'',g:'std',kmk:'1',type:'M_101',km:'0.22',sum:400,vat:88,pkat:'1',preg:'11111125',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Uus Arve OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10025',ettemaks:'',kp:'2024-11-28',arvesum:488,kreeditkp:'',kom:'22% käive – uus kirje',diff:'new'},
+  {id:57,nr:'',g:'std',kmk:'1',type:'M_101',km:'0.22',sum:5000,vat:1100,pkat:'101',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'SA10001',ettemaks:'',kp:'2024-11-12',arvesum:5000,kreeditkp:'',kom:'Salastatud arve – 22% käive',diff:'sent'},
+  {id:58,nr:'',g:'std',kmk:'2',type:'M_101',km:'0.09',sum:2000,vat:180,pkat:'101',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'SA10002',ettemaks:'',kp:'2024-11-18',arvesum:2000,kreeditkp:'',kom:'Salastatud arve – 9% käive',diff:'sent'},
   {id:1,nr:'1',g:'std',kmk:'1',type:'M_101',km:'0.22',sum:1000,vat:220,pkat:'1',preg:'11111111',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Arve Esitaja OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10001',ettemaks:'',kp:'2024-11-02',arvesum:1000,kreeditkp:'',kom:'22% käive – Eesti juriidiline isik',diff:'sent'},
   {id:2,nr:'2',g:'std',kmk:'1',type:'M_101',km:'0.22',sum:1000,vat:220,pkat:'2',preg:'',pkoodtaps:'',pnimi:'(füüsiline isik)',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'2024-11-02',arvesum:0,kreeditkp:'',kom:'22% käive füüsilisele isikule',diff:'sent'},
   {id:3,nr:'',g:'std',kmk:'2',type:'M_101',km:'0.09',sum:1000,vat:90,pkat:'1',preg:'11111112',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Teine Arve Esitaja OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10004',ettemaks:'',kp:'2024-11-02',arvesum:1000,kreeditkp:'',kom:'9% käive',diff:'sent'},
   {id:4,nr:'3',g:'std',kmk:'3',type:'M_102',km:'0.22',sum:2500,vat:550,pkat:'1',preg:'11111113',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Ettemaks OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'EA10001',kp:'2024-11-02',arvesum:3000,kreeditkp:'',kom:'Kassapõhine ettemaks',diff:'mod'},
   {id:5,nr:'',g:'std',kmk:'4',type:'M_103',km:'0.09',sum:458.72,vat:41.28,pkat:'1',preg:'11111115',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Kasutatud kaup OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10006',ettemaks:'',kp:'2024-11-04',arvesum:2000,kreeditkp:'',kom:'Kasuminorm – kasutatud kaup',diff:'sent'},
   {id:6,nr:'',g:'std',kmk:'7',type:'M_105',km:'0',sum:1000,vat:0,pkat:'1',preg:'11111119',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'EE Pöördmaks OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10010',ettemaks:'',kp:'2024-11-08',arvesum:1000,kreeditkp:'',kom:'Pöördmaks – müüja',diff:'sent'},
-  {id:51,nr:'',g:'std',kmk:'1',type:'M_101',km:'0.22',sum:400,vat:88,pkat:'1',preg:'11111125',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Uus Arve OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10025',ettemaks:'',kp:'2024-11-28',arvesum:488,kreeditkp:'',kom:'22% käive – uus kirje',diff:'new'},
-  {id:57,nr:'',g:'std',kmk:'1',type:'M_101',km:'0.22',sum:5000,vat:1100,pkat:'101',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'SA10001',ettemaks:'',kp:'2024-11-12',arvesum:5000,kreeditkp:'',kom:'Salastatud arve – 22% käive',diff:'sent'},
-  {id:58,nr:'',g:'std',kmk:'2',type:'M_101',km:'0.09',sum:2000,vat:180,pkat:'101',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'SA10002',ettemaks:'',kp:'2024-11-18',arvesum:2000,kreeditkp:'',kom:'Salastatud arve – 9% käive',diff:'sent'},
   {_h:'null'},
   {id:7,nr:'5',g:'null',kmk:'8',type:'M_201',km:'0',sum:1000,vat:0,pkat:'1',preg:'FI08611111',pkoodtaps:'KMKR_NUMBER',pnimi:'EU Kaup OY',grpkat:'',grpreg:'',grpnimi:'',riik:'FI',riiktaps:'RR_ostja',arvenr:'MA10011',ettemaks:'',kp:'2024-11-10',arvesum:1000,kreeditkp:'',kom:'Kauba üh.sis. käive',diff:'sent'},
   {id:8,nr:'',g:'null',kmk:'9',type:'M_202',km:'0',sum:1000,vat:0,pkat:'1',preg:'LV41111111111',pkoodtaps:'KMKR_NUMBER',pnimi:'EU Teenus SIA',grpkat:'',grpreg:'',grpnimi:'',riik:'LV',riiktaps:'RR_ostja',arvenr:'MA10012',ettemaks:'',kp:'2024-11-11',arvesum:1000,kreeditkp:'',kom:'Üh.sis. teenuse käive',diff:'sent'},
@@ -650,25 +779,28 @@ let rows=[
   {id:41,nr:'',g:'null',kmk:'9',type:'M_202',km:'0',sum:2500,vat:0,pkat:'1',preg:'SE556123456701',pkoodtaps:'KMKR_NUMBER',pnimi:'Rootsi Teenus AB',grpkat:'',grpreg:'',grpnimi:'',riik:'SE',riiktaps:'RR_ostja',arvenr:'MA10031',ettemaks:'',kp:'2024-11-28',arvesum:2500,kreeditkp:'',kom:'Uus – üh.sis. teenuse käive Rootsi',diff:'new'},
   {_h:'maks'},
   {id:10,nr:'',g:'maks',kmk:'12',type:'M_301',km:'0',sum:1200,vat:0,pkat:'1',preg:'11111123',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Maksuvaba OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10023',ettemaks:'',kp:'2024-11-25',arvesum:1200,kreeditkp:'',kom:'Maksuvaba käive',diff:'mod'},
-  {_h:'sega'},
-  {id:11,nr:'7',g:'sega',kmk:'2',type:'M_101',km:'0.09',sum:600,vat:54,pkat:'1',preg:'11111124',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Segaarve OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10024',ettemaks:'',kp:'2024-11-26',arvesum:1500,kreeditkp:'',kom:'Segaarve – 9% osa',diff:'sent'},
-  {id:12,nr:'8',g:'sega',kmk:'1',type:'M_101',km:'0.22',sum:900,vat:198,pkat:'1',preg:'11111124',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Segaarve OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10024',ettemaks:'',kp:'2024-11-26',arvesum:1500,kreeditkp:'',kom:'Segaarve – 22% osa',diff:'sent'},
-  {_h:'grupp'},
-  {id:13,nr:'',g:'grupp',kmk:'1',type:'M_101',km:'0.22',sum:1000,vat:220,pkat:'1',preg:'11111130',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Grupi Liikme Partner OÜ',grpkat:'3',grpreg:'10000002',grpnimi:'Grupi Liige OÜ',riik:'',riiktaps:'',arvenr:'MA12001',ettemaks:'',kp:'2024-11-10',arvesum:1000,kreeditkp:'',kom:'KM-grupi liikme käive',diff:'del'},
+  {_h:'tehpart'},
+  {id:11,nr:'7',g:'tehpart',kmk:'2',type:'M_101',km:'0.09',sum:600,vat:54,pkat:'1',preg:'11111124',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Segaarve OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10024',ettemaks:'',kp:'2024-11-26',arvesum:1500,kreeditkp:'',kom:'Segaarve – 9% osa',diff:'sent'},
+  {id:12,nr:'8',g:'tehpart',kmk:'1',type:'M_101',km:'0.22',sum:900,vat:198,pkat:'1',preg:'11111124',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Segaarve OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10024',ettemaks:'',kp:'2024-11-26',arvesum:1500,kreeditkp:'',kom:'Segaarve – 22% osa',diff:'sent'},
+  {id:13,nr:'',g:'tehpart',kmk:'1',type:'M_101',km:'0.22',sum:1000,vat:220,pkat:'1',preg:'11111130',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Grupi Liikme Partner OÜ',grpkat:'3',grpreg:'10000002',grpnimi:'Grupi Liige OÜ',riik:'',riiktaps:'',arvenr:'MA12001',ettemaks:'',kp:'2024-11-10',arvesum:1000,kreeditkp:'',kom:'KM-grupi liikme käive',diff:'del'},
   {_h:'kreedi'},
   {id:14,nr:'9',g:'kreedi',kmk:'1',type:'M_101',km:'0.22',sum:-1500,vat:-330,pkat:'1',preg:'11111131',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Kreedit OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'KR0001',ettemaks:'',kp:'2024-11-30',arvesum:-1500,kreeditkp:'2024-09-27',kom:'22% kreeditarve',diff:'mod'},
   {_h:'lootu'},
   {id:15,nr:'',g:'lootu',kmk:'1',type:'M_101',km:'0.22',sum:-1000,vat:-220,pkat:'1',preg:'11111111',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Arve Esitaja OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA00099',ettemaks:'',kp:'2022-12-03',arvesum:-1000,kreeditkp:'',kom:'Lootusetu nõue',diff:'sent'},
+  {_h:'main_S'},
   {_h:'poord'},
   {id:16,nr:'11',g:'poord',kmk:'21',type:'S_101',km:'0.22',sum:1000,vat:220,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Kauba üh.sis. soetamine',diff:'sent'},
   {id:17,nr:'',g:'poord',kmk:'22',type:'S_102',km:'0.09',sum:1000,vat:90,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Teenused teise LR MK-lt',diff:'sent'},
   {id:52,nr:'',g:'poord',kmk:'23',type:'S_104',km:'0.22',sum:500,vat:110,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Muu kaup – uus pöördmaks',diff:'new'},
+  {_h:'main_O'},
   {_h:'sisend'},
   {id:18,nr:'12',g:'sisend',kmk:'13',type:'O_101',km:'',sum:220,vat:0,pkat:'1',preg:'13000001',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Sisend OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'OA27001',ettemaks:'',kp:'2024-11-05',arvesum:1000,kreeditkp:'',kom:'Lubatud sisend-KM',diff:'sent'},
   {id:19,nr:'',g:'sisend',kmk:'16',type:'O_103',km:'',sum:110,vat:0,pkat:'1',preg:'13000004',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Osaline Sisend OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'OA30001',ettemaks:'',kp:'2024-11-08',arvesum:1000,kreeditkp:'',kom:'Osaline mahaarvamine 50%',diff:'del'},
   {id:60,nr:'',g:'sisend',kmk:'17',type:'O_106',km:'',sum:4400,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'TD240891',ettemaks:'',kp:'2024-11-08',arvesum:0,kreeditkp:'',kom:'Tollideklaratsiooni alusel tasutud impordi KM',diff:'sent'},
   {id:61,nr:'',g:'sisend',kmk:'17',type:'O_106',km:'',sum:1760,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'2024-11-15',arvesum:0,kreeditkp:'',kom:'KMD alusel (KMD rida 4.1) tasutud impordi KM',diff:'sent'},
   {id:70,nr:'',g:'sisend',kmk:'',type:'O_104',km:'',sum:660,vat:0,pkat:'101',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'2024-11-14',arvesum:0,kreeditkp:'',kom:'Salastatud arve sisend-KM (kutse- ja ametisaladus)',diff:'sent'},
+  {_h:'sistepart'},
+  {id:71,nr:'',g:'sistepart',kmk:'13',type:'O_101',km:'',sum:330,vat:0,pkat:'101',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'2027-01-15',arvesum:0,kreeditkp:'',kom:'Salastatud arve sisend-KM (tehingupartneri erisus)',diff:'sent'},
   {_h:'phiv'},
   {id:20,nr:'',g:'phiv',kmk:'18',type:'O_201',km:'',sum:46000,vat:0,pkat:'1',preg:'13000007',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Kombaini Sisend OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'OA32001',ettemaks:'',kp:'2024-11-10',arvesum:210000,kreeditkp:'',kom:'Põhivara (kombain) sisend-KM',diff:'mod'},
   {id:62,nr:'',g:'phiv',kmk:'',type:'O_203',km:'',sum:33000,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'TD241102',ettemaks:'',kp:'2024-11-20',arvesum:150000,kreeditkp:'',kom:'Imporditud põhivara sisend-KM (v.a sõiduautod)',diff:'sent'},
@@ -685,8 +817,11 @@ let rows=[
   {_h:'arves'},
   {id:55,nr:'',g:'arves',kmk:'',type:'O_501',km:'',sum:180,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'IM10001',ettemaks:'',kp:'2024-11-15',arvesum:0,kreeditkp:'',kom:'Impordi maksustatava väärtuse muutus',diff:'sent'},
   {id:56,nr:'',g:'arves',kmk:'',type:'O_502',km:'',sum:320,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'2024-11-22',arvesum:0,kreeditkp:'',kom:'Maksuladustamise lõpetamine',diff:'sent'},
+  {_h:'sislootu'},
+  {id:72,nr:'',g:'sislootu',kmk:'13',type:'O_101',km:'',sum:220,vat:0,pkat:'',preg:'11111111',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Lootusetu OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA00088',ettemaks:'',kp:'2022-11-01',arvesum:1000,kreeditkp:'',kom:'Lootusetu nõude sisend-KM mahaarvamine',diff:'sent'},
   {_h:'korr'},
   {id:24,nr:'',g:'korr',kmk:'24',type:'O_601',km:'',sum:-440,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Sisend-KM korrigeerimine',diff:'mod'},
+  {_h:'main_A'},
   {_h:'arvkand'},
   {id:25,nr:'',g:'arvkand',kmk:'25',type:'A_101',km:'0.22',sum:220,vat:48.4,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Omatarve',diff:'sent'},
   {id:54,nr:'',g:'arvkand',kmk:'25',type:'A_101',km:'0.22',sum:300,vat:66,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Arvestuslik kanne – uus',diff:'new'},
@@ -754,7 +889,8 @@ function confirmSend(){
   rows=rows.filter(r=>r._h||r.diff!=='del');
   rows.filter(r=>!r._h).forEach(r=>r.diff='sent');
   closeSendModal();buildKmkAll();updateStatus();renderTable();calcSummary();
-  alert('Kõik andmed saadetud EMTA-le!');
+  setWorkflowState('sent');
+  alert('Kõik andmed saadetud EMTA-le!\n\nOota EMTA tagasisideraporti, seejärel vajuta "Kontrolli".');
 }
 function markDel(id){
   const r=rows.find(x=>x.id===id);if(!r)return;
@@ -909,23 +1045,6 @@ function calcBilan(){
     document.getElementById('sik-vahe-lbl').textContent='—';
     document.getElementById('sik-err').classList.remove('show');
   }
-  // Kokku vahe
-  const totKmd=mykKmd-sikKmd;
-  document.getElementById('tot-kmd').textContent=fmt(totKmd);
-  if(mb!==null&&sb!==null){
-    const totBil=mb-sb,v=totKmd-totBil,ok=Math.abs(v)<0.01;
-    document.getElementById('tot-bil').textContent=fmt(totBil);
-    document.getElementById('tot-vahe').textContent=fmt(v);
-    document.getElementById('tot-vahe-box').className='bilan-box '+(ok?'ok':'err');
-    document.getElementById('tot-vahe-lbl').textContent=ok?'✓ Kooskõlas':'Erinevus!';
-    document.getElementById('tot-err').classList.toggle('show',!ok);
-  }else{
-    document.getElementById('tot-bil').textContent='—';
-    document.getElementById('tot-vahe').textContent='—';
-    document.getElementById('tot-vahe-box').className='bilan-box neutral';
-    document.getElementById('tot-vahe-lbl').textContent=(mb!==null||sb!==null)?'Sisesta mõlemad':'—';
-    document.getElementById('tot-err').classList.remove('show');
-  }
 }
 
 function buildKmkAll(){
@@ -966,10 +1085,11 @@ function rowHtml(r){
     if(r.diff==='new') acts+=' <button class="act-btn del" onclick="markDel('+r.id+')" title="Kustuta">&#10005;</button>';
     else acts+=' <button class="act-btn del" onclick="markDel('+r.id+')" title="Märgi kustutatavaks">&#10005;</button>';
   }
-  const rc='r'+r.diff[0];
+  const hasEmtaErr=r.emtaErr&&r.emtaErr.length;
+  const rc=(hasEmtaErr?'row-emta-err ':'')+'r'+r.diff[0];
   return '<tr class="'+rc+'">'
     +'<td class="muted">'+(r.nr||'')+'</td>'
-    +'<td>'+stateBadge(r)+'</td>'
+    +'<td>'+(hasEmtaErr?'<span class="emta-err-badge" title="'+r.emtaErr.join('; ')+'">&#9888; EMTA viga</span>':stateBadge(r))+'</td>'
     +'<td><span class="pill '+pCls(r.type)+'">'+r.type+'</span></td>'
     +'<td class="col-desc'+(descColVisible?'':' col-desc-hidden')+'" title="'+(KMDDESCS[r.type]||r.type)+'" style="white-space:normal;max-width:220px;font-size:11px">'+(KMDDESCS[r.type]||'')+'</td>'
     +'<td title="'+(r.kom||'')+'">'+(r.kom||'')+'</td>'
@@ -998,7 +1118,31 @@ function renderTable(){
   const flt=document.getElementById('search').value||document.getElementById('filterSec').value||document.getElementById('filterKmk').value||document.getElementById('filterDiff').value;
   let html='',cnt=0;
   if(flt){rows.filter(r=>!r._h&&matchRow(r)).forEach(r=>{html+=rowHtml(r);cnt++;});}
-  else{rows.forEach(r=>{if(r._h)html+='<tr class="hrow"><td colspan="23">'+HEADINGS[r._h]+'</td></tr>';else{html+=rowHtml(r);cnt++;}});}
+  else{
+    // 3-taseme rühmitus: peagrupp (M/S/O/A) → alamgrupp (std/null/...) → KMD tüüp
+    let curMain=null, curMid=null, curType=null;
+    rows.forEach(r=>{
+      if(r._h){
+        // Tase 2 vahepealkirjad
+        const main=r._h.startsWith('main_')?r._h:null;
+        if(main){
+          curMain=main;curMid=null;curType=null;
+          html+='<tr class="hrow-main"><td colspan="23">'+HEADINGS[main]+'</td></tr>';
+        } else {
+          curMid=r._h;curType=null;
+          html+='<tr class="hrow-mid"><td colspan="23">'+HEADINGS[r._h]+'</td></tr>';
+        }
+      } else {
+        // Tase 3: KMD tüübi päis kui tüüp muutub
+        if(r.type!==curType){
+          curType=r.type;
+          const lbl=TYPE_LABELS[r.type]||r.type;
+          html+='<tr class="hrow-type"><td colspan="23">'+lbl+'</td></tr>';
+        }
+        html+=rowHtml(r);cnt++;
+      }
+    });
+  }
   document.getElementById('rowCount').textContent=cnt+' kirjet';
   document.getElementById('tableBody').innerHTML=html;
   calcSummary();updateStatus();calcBilan();
@@ -1121,23 +1265,77 @@ const KMDNAMES={
     A_101:'Standard- või soodusmääraga arvestuslikud kanded',
   };
 
-  const groups={};
+  // 4 põhigruppi: M, S, A, O
+  const MAIN_GROUPS = [
+    {key:'M_', label:'M — Müük',                    prefix:'M_'},
+    {key:'S_', label:'S — Pöördmaksustav soetus',   prefix:'S_'},
+    {key:'A_', label:'A — Arvestuslikud kanded',    prefix:'A_'},
+    {key:'O_', label:'O — Ost / Sisendkäibemaks',   prefix:'O_'},
+  ];
+
+  // Kogu andmed tüüpide kaupa
+  const byType={};
   rows.filter(r=>!r._h&&r.diff!=='del').forEach(r=>{
-    const sec=TYPES[r.type]||'?';
-    if(!groups[sec])groups[sec]={types:{},tot:0};
-    if(!groups[sec].types[r.type])groups[sec].types[r.type]={sum:0,vat:0,n:0,kmks:new Set()};
-    const d=groups[sec].types[r.type];d.sum+=parseFloat(r.sum)||0;d.vat+=parseFloat(r.vat)||0;d.n++;
-    if(r.kmk)d.kmks.add(r.kmk);groups[sec].tot+=parseFloat(r.sum)||0;
+    if(!byType[r.type])byType[r.type]={sum:0,vat:0,n:0,kmks:new Set()};
+    const d=byType[r.type];
+    d.sum+=parseFloat(r.sum)||0;
+    d.vat+=parseFloat(r.vat)||0;
+    d.n++;
+    if(r.kmk)d.kmks.add(r.kmk);
   });
-  const names={'M_1':'M_1 — Standard/sood','M_2':'M_2 — Nullmäär','M_3':'M_3 — Maksuvaba','S_':'S — Pöördmaks','O_':'O — Sisendkäibemaks','A_':'A — Arvestuslikud'};
+
   let html='';
-  Object.keys(groups).sort().forEach(sec=>{
-    const g=groups[sec],pc=pCls(Object.keys(g.types)[0]);
-    html+='<div class="stbl"><table><thead><tr><th colspan="6"><span class="pill '+pc+'" style="font-size:10px;padding:0 5px">'+names[sec]+'</span></th></tr><tr><th>KMD tüüp</th><th style="min-width:260px">KMD tüübi kommentaar</th><th>KMK-d</th><th>Kirjeid</th><th style="text-align:right">Dekl. summa</th><th style="text-align:right">KM (&euro;)</th></tr></thead><tbody>';
-    Object.keys(g.types).sort().forEach(t=>{
-      const d=g.types[t],kmks=[...d.kmks].sort((a,b)=>+a-+b).map(k=>'<span class="kmk-b">'+k+'</span>').join(' ')||'—';
-      html+='<tr><td><span class="pill '+pCls(t)+'">'+t+'</span></td><td style="font-size:11px;color:var(--text2);white-space:normal;max-width:260px">'+(KMDNAMES[t]||'')+'</td><td>'+kmks+'</td><td class="muted">'+d.n+'</td><td style="text-align:right;font-family:monospace;font-size:11px'+(d.sum<0?';color:var(--red)':'')+'">'+fmt(d.sum)+'</td><td style="text-align:right;font-family:monospace;font-size:11px">'+fmt(d.vat)+'</td></tr>';
+  MAIN_GROUPS.forEach(mg=>{
+    // Filtreeri tüübid mis kuuluvad sellesse põhigruppi
+    const types=Object.keys(byType).filter(t=>t.startsWith(mg.prefix)).sort();
+    if(!types.length)return;
+
+    // Põhigrupi kokku
+    let gtSum=0,gtVat=0,gtN=0;
+    types.forEach(t=>{gtSum+=byType[t].sum;gtVat+=byType[t].vat;gtN+=byType[t].n;});
+
+    const pc=pCls(types[0]);
+    html+='<div class="stbl" style="margin-bottom:10px">';
+    html+='<table>';
+    // Põhigrupi päis
+    html+='<thead>';
+    html+='<tr style="background:var(--blue)">'
+      +'<th colspan="5" style="font-size:12px;padding:6px 8px;letter-spacing:.02em">'+mg.label+'</th>'
+      +'<th style="text-align:right;font-size:11px;padding:6px 8px">'+fmt(gtSum)+'</th>'
+      +'<th style="text-align:right;font-size:11px;padding:6px 8px">'+fmt(gtVat)+'</th>'
+      +'</tr>';
+    html+='<tr style="background:var(--blue-lt)">'
+      +'<th style="color:var(--blue-dk)">KMD tüüp</th>'
+      +'<th style="color:var(--blue-dk);min-width:260px;white-space:normal">KMD tüübi kommentaar</th>'
+      +'<th style="color:var(--blue-dk)">KMK-d</th>'
+      +'<th style="color:var(--blue-dk)">Kirjeid</th>'
+      +'<th style="color:var(--blue-dk);text-align:right" colspan="2">Dekl. summa</th>'
+      +'<th style="color:var(--blue-dk);text-align:right">KM (&euro;)</th>'
+      +'</tr>';
+    html+='</thead><tbody>';
+
+    types.forEach(t=>{
+      const d=byType[t];
+      const kmks=[...d.kmks].sort((a,b)=>+a-+b).map(k=>'<span class="kmk-b">'+k+'</span>').join(' ')||'—';
+      const neg=d.sum<0?';color:var(--red)':'';
+      html+='<tr>'
+        +'<td><span class="pill '+pCls(t)+'">'+t+'</span></td>'
+        +'<td style="font-size:11px;color:var(--text2);white-space:normal;max-width:260px">'+(KMDNAMES[t]||'')+'</td>'
+        +'<td>'+kmks+'</td>'
+        +'<td class="muted">'+d.n+'</td>'
+        +'<td style="text-align:right;font-family:monospace;font-size:11px'+neg+'" colspan="2">'+fmt(d.sum)+'</td>'
+        +'<td style="text-align:right;font-family:monospace;font-size:11px">'+fmt(d.vat)+'</td>'
+        +'</tr>';
     });
+
+    // Grupi kokku rida
+    const gtNeg=gtSum<0?';color:var(--red)':'';
+    html+='<tr style="background:var(--blue-lt);font-weight:bold;border-top:1px solid var(--blue-mid)">'
+      +'<td colspan="4" style="color:var(--blue-dk)">Kokku</td>'
+      +'<td style="text-align:right;font-family:monospace'+gtNeg+'" colspan="2">'+fmt(gtSum)+'</td>'
+      +'<td style="text-align:right;font-family:monospace">'+fmt(gtVat)+'</td>'
+      +'</tr>';
+
     html+='</tbody></table></div>';
   });
   document.getElementById('sumContent').innerHTML=html;
@@ -1158,12 +1356,143 @@ function openValidate(){
     if(['M_201','M_202','M_203','M_204','M_205','M_206','M_207'].includes(r.type)&&!r.riik)errs.push((r.arvenr||r.type)+' — puudub ostja riigi tunnus');
     if(parseFloat(r.sum)<0&&!r.kreeditkp)errs.push((r.arvenr||r.type)+' — kreeditarvel puudub esialgse arve kuupäev');
   });
-  if(!errs.length)alert('Valideeritud — vigu ei leitud.');
-  else alert('Valideerimise vead ('+errs.length+'):\n\n'+errs.map((e,i)=>(i+1)+'. '+e).join('\n'));
+  if(!errs.length){setWorkflowState('validated');alert('&#10003; Valideeritud — vigu ei leitud.\nAndmed on valmis saatmiseks.');}else{alert('Valideerimise vead ('+errs.length+'):\n\n'+errs.map((e,i)=>(i+1)+'. '+e).join('\n'));}
 }
 function openXml(){alert('XML genereeritakse:\n• Kõik eelmised kirjed saavad toimingu T\n• Kõik praegused kirjed saavad toimingu R\n• Directo KMK väljad jäetakse XMList välja');}
 
-buildKmkAll();buildKmkForm();updateChips();renderTable();
+// ── Töövoo olek ───────────────────────────────────────────────────────────────
+// olek: 'idle' | 'validated' | 'sent' | 'kontrolli_ok' | 'kontrolli_err' | 'kinnitatud'
+let workflowState = 'idle';
+let emtaErrors = []; // [{id, kood, tekst}]
+
+function setWorkflowState(state){
+  workflowState = state;
+  const steps = ['wf1','wf2','wf3','wf4'];
+  const stateMap = {
+    idle:         [null,null,null,null],
+    validated:    ['done',null,null,null],
+    sent:         ['done','done',null,null],
+    kontrolli_ok: ['done','done','done',null],
+    kontrolli_err:['done','done','error',null],
+    kinnitatud:   ['done','done','done','done'],
+  };
+  const s = stateMap[state]||[null,null,null,null];
+  steps.forEach((id,i)=>{
+    const el=document.getElementById(id);
+    el.className='wf-step'+(s[i]?' '+s[i]:'');
+    // uuenda dot
+    const dot=el.querySelector('.wf-dot');
+    if(dot) dot.className='wf-dot';
+  });
+  // Aktiveeri järgmine samm
+  const nextMap = {idle:0,validated:1,sent:2,kontrolli_ok:3,kontrolli_err:2,kinnitatud:3};
+  const next = nextMap[state];
+  if(next!==undefined && s[next]===null){
+    const el=document.getElementById(steps[next]);
+    if(el){el.classList.add('active');el.querySelector('.wf-dot').className='wf-dot';}
+  }
+  // Nupp olekud
+  document.getElementById('btnKontrolli').disabled = !['sent','kontrolli_ok','kontrolli_err'].includes(state);
+  document.getElementById('btnKinnita').disabled = !['kontrolli_ok','kinnitatud'].includes(state) || state==='kinnitatud';
+  // Staatus tekst
+  const txt={idle:'',validated:'&#10003; Andmed valideeritud',sent:'&#9650; Andmed saadetud EMTA-le — oota tagasisideraporti',kontrolli_ok:'&#10003; Tagasisideraport: vead puuduvad — valmis kinnitamiseks',kontrolli_err:'&#9888; Tagasisideraport: leiti vigu — paranda ja saada uuesti',kinnitatud:'&#128274; KMD kinnitatud PIN2-ga'};
+  document.getElementById('wf-status-txt').innerHTML=txt[state]||'';
+}
+
+// ── EMTA tagasiside vead ───────────────────────────────────────────────────────
+// Mock EMTA vead — prototüübis simuleeritakse X-tee vastust
+// Päris süsteemis tuleb see automaatselt Directosse X-tee kaudu
+const MOCK_EMTA_ERRORS = [
+  {rowId:7, kood:'EE0203-041', tekst:'Ostja riigi tunnus puudub ühendusesisese tehingu korral (M_201)'},
+  {rowId:4, kood:'EE0203-012', tekst:'Kassapõhise käibe ettemaksu arve number on kohustuslik'},
+];
+
+function openKontrolliModal(){
+  // Näita laadimisanimatsiooni
+  document.getElementById('ke-loading').style.display='block';
+  document.getElementById('ke-result').style.display='none';
+  document.getElementById('ke-goto-btn').style.display='none';
+  document.getElementById('kontrolliOvl').classList.add('open');
+
+  // Simuleeri X-tee päringu viivitust
+  setTimeout(()=>{
+    document.getElementById('ke-loading').style.display='none';
+    document.getElementById('ke-result').style.display='block';
+
+    // Simuleeri: 50% tõenäosusega vead, 50% ok
+    // Prototüübis kasutame mock andmeid — näitame vigu
+    const mockErrors = MOCK_EMTA_ERRORS;
+
+    // Rakenda vead ridadele
+    rows.filter(r=>!r._h).forEach(r=>delete r.emtaErr);
+    emtaErrors = [];
+    mockErrors.forEach(e=>{
+      const r=rows.find(x=>x.id===e.rowId);
+      if(r){
+        if(!r.emtaErr)r.emtaErr=[];
+        r.emtaErr.push(e.kood+': '+e.tekst);
+        emtaErrors.push(e);
+      }
+    });
+
+    if(!emtaErrors.length){
+      // OK — vead puuduvad
+      document.getElementById('ke-result-ok').style.display='block';
+      document.getElementById('ke-result-err').style.display='none';
+      setWorkflowState('kontrolli_ok');
+    } else {
+      // Vead leitud
+      document.getElementById('ke-result-ok').style.display='none';
+      document.getElementById('ke-result-err').style.display='block';
+      document.getElementById('ke-goto-btn').style.display='block';
+      // Kuvaa vead loendis
+      const el=document.getElementById('ke-list');
+      el.innerHTML=emtaErrors.map(e=>{
+        const r=rows.find(x=>x.id===e.rowId);
+        const lbl=r?(r.arvenr||r.type)+' '+(r.pnimi?'('+r.pnimi.slice(0,25)+')':''):'?';
+        return '<div style="display:flex;align-items:flex-start;gap:6px;padding:6px 8px;border-bottom:1px solid var(--border2);font-size:11px">'
+          +'<span class="emta-err-badge" style="margin-top:1px">'+e.kood+'</span>'
+          +'<span><strong>'+lbl+'</strong><br>'+e.tekst+'</span>'
+          +'</div>';
+      }).join('');
+      setWorkflowState('kontrolli_err');
+      renderTable();
+    }
+  }, 1800); // 1.8 sekundi viivitus simuleerib X-tee päringu aega
+}
+function closeKontrolliModal(){document.getElementById('kontrolliOvl').classList.remove('open');}
+
+// ── PIN2 ──────────────────────────────────────────────────────────────────────
+function openPin2Modal(){
+  const from=document.getElementById('flt-from').value||'';
+  const to=document.getElementById('flt-to').value||'';
+  document.getElementById('pin2-period').textContent=(from&&to)?from+' – '+to:'—';
+  document.getElementById('pin2-sent').textContent=document.getElementById('lastSentTxt').textContent;
+  document.getElementById('pin2-status').textContent=workflowState==='kontrolli_ok'?'Vigu ei leitud ✓':'—';
+  document.getElementById('pin2-input').value='';
+  updatePin2Dots();
+  document.getElementById('pin2Ovl').classList.add('open');
+  setTimeout(()=>document.getElementById('pin2-input').focus(),100);
+}
+function closePin2Modal(){document.getElementById('pin2Ovl').classList.remove('open');}
+function updatePin2Dots(){
+  const v=document.getElementById('pin2-input').value;
+  for(let i=0;i<6;i++) document.getElementById('pd'+i).className='pin2-dot'+(i<v.length?' filled':'');
+  document.getElementById('pin2-confirm-btn').disabled=v.length<4;
+}
+function confirmPin2(){
+  const pin=document.getElementById('pin2-input').value;
+  if(pin.length<4)return;
+  closePin2Modal();
+  setWorkflowState('kinnitatud');
+  document.getElementById('btnKinnita').disabled=true;
+  alert('&#128274; KMD kinnitatud!\n\nPrototüübis ei saadeta tegelikku PIN2 kinnitust.\nTöötavas süsteemis saadetakse kinnitustaotlus EMTA-le.');
+}
+
+// ── Uuenda confirmSend et muuta töövoo olekut ─────────────────────────────────
+const _origConfirmSend = confirmSend;
+
+buildKmkAll();buildKmkForm();updateChips();renderTable();setWorkflowState('idle');
 </script>
 </body>
 </html>
