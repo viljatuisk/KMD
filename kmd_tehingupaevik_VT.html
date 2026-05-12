@@ -358,8 +358,7 @@ td.ec:hover{background:var(--blue-lt)!important}
         <th class="col-desc col-desc-hidden" style="min-width:200px">KMD tüübi kommentaar</th>
         <th style="min-width:150px">KMD tüübi sisu</th><th>KM%</th><th>KMK</th>
         <th style="min-width:110px;text-align:right">Deklareeritav summa</th>
-        <th style="min-width:70px;text-align:right">KM (€)</th>
-        <th>Teh.Part. kat.</th><th style="min-width:90px">Partneri reg/KMKR</th>
+        <th style="min-width:70px;text-align:right">KM (€)</th><th title="Tehingupartneri ja arve erisuse tunnus" style="min-width:60px;cursor:help">TP/Arve tunnus</th><th style="min-width:90px">Partneri reg/KMKR</th>
         <th style="min-width:100px">Partneri nimi</th><th style="min-width:75px">Koodi täps.</th>
         <th>Grupp kat</th><th style="min-width:75px">Grupi liikme reg</th>
         <th style="min-width:90px">Grupi liikme nimi</th><th>Riik</th>
@@ -432,11 +431,11 @@ td.ec:hover{background:var(--blue-lt)!important}
   <div class="fgrid g4">
     <div class="fld"><label>Partneri kategooria</label>
       <select id="f-pkat">
-        <option value="1">1 - Eesti juriidiline isik</option>
-        <option value="2">2 - Füüsiline isik</option>
-        <option value="3">3 - KM-grupi liige</option>
-        <option value="KMKR_NUMBER">KMKR_NUMBER</option>
-        <option value="MRR_KOOD">MRR_KOOD</option>
+        <option value="100">100 - Eesti juriidiline isik / teise LR KM-kohustuslane</option>
+        <option value="200">200 - Füüsiline isik / mittekohustuslane</option>
+        <option value="300">300 - KM-grupi liige</option>
+        <option value="101">101 - Salastatud arve</option><option value="102">102 - Lihtsustatud arve</option><option value="103">103 - Kogusumma &lt; 1000 €</option><option value="104">104 - Segaarve</option>
+        
       </select>
     </div>
     <div class="fld"><label>Registrikood / KMKR</label><input id="f-preg"/></div>
@@ -446,7 +445,7 @@ td.ec:hover{background:var(--blue-lt)!important}
   <div class="fsec">Käibemaksugrupp</div>
   <div class="fgrid g3">
     <div class="fld"><label>Grupi liikme kategooria</label>
-      <select id="f-grpkat"><option value="">- ei ole -</option><option value="3">3 - KM-grupi liige</option></select>
+      <select id="f-grpkat"><option value="">- ei ole -</option><option value="300">300 - KM-grupi liige</option></select>
     </div>
     <div class="fld"><label>Grupi liikme registrikood</label><input id="f-grpreg"/></div>
     <div class="fld"><label>Grupi liikme nimi</label><input id="f-grpnimi"/></div>
@@ -603,7 +602,7 @@ td.ec:hover{background:var(--blue-lt)!important}
     </div>
     <div class="fgrid g4" style="margin-bottom:7px">
       <div class="fld"><label>Partneri kategooria</label>
-        <select id="e-pkat"><option value="1">1 - Eesti juriidiline isik</option><option value="2">2 - Füüsiline isik</option><option value="3">3 - KM-grupi liige</option><option value="KMKR_NUMBER">KMKR_NUMBER</option><option value="MRR_KOOD">MRR_KOOD</option></select>
+        <select id="e-pkat"><option value="100">100 - Eesti juriidiline isik / teise LR KM-kohustuslane</option><option value="200">200 - Füüsiline isik / mittekohustuslane</option><option value="300">300 - KM-grupi liige</option><option value="101">101 - Salastatud arve</option><option value="102">102 - Lihtsustatud arve</option><option value="103">103 - Kogusumma &lt; 1000 €</option><option value="104">104 - Segaarve</option></select>
       </div>
       <div class="fld"><label>Registrikood / KMKR</label><input id="e-preg"/></div>
       <div class="fld"><label>Koodi täpsustus</label><input id="e-pkoodtaps"/></div>
@@ -617,7 +616,7 @@ td.ec:hover{background:var(--blue-lt)!important}
     </div>
     <div class="fgrid g3" style="margin-bottom:7px">
       <div class="fld"><label>Grupi liikme kategooria</label>
-        <select id="e-grpkat"><option value="">- ei ole -</option><option value="3">3 - KM-grupi liige</option></select>
+        <select id="e-grpkat"><option value="">- ei ole -</option><option value="300">300 - KM-grupi liige</option></select>
       </div>
       <div class="fld"><label>Grupi liikme registrikood</label><input id="e-grpreg"/></div>
       <div class="fld"><label>Grupi liikme nimi</label><input id="e-grpnimi"/></div>
@@ -712,6 +711,15 @@ td.ec:hover{background:var(--blue-lt)!important}
 </div>
 
 <script>
+const PKAT_LABELS={
+  '100':'100 — Eestis registreeritud juriidiline isik (sh FIE) või teise liikmesriigi käibemaksukohustuslane',
+  '101':'101 — Salastatud andmetega arve (kutse- ja ametisaladuse kohustus)',
+  '102':'102 — Lihtsustatud arve (aparaadist väljatrükk)',
+  '103':'103 — Arve(te) kogusumma perioodi jooksul väiksem kui 1000 € ühe tehingupartneri kohta',
+  '104':'104 — Erineva käibemaksukäsitlusega tehinguid sisaldav arve (segaarve)',
+  '200':'200 — Füüsiline isik (v.a FIE), teise LR mittekäibemaksukohustuslane või ilma Eesti registrikoodita välisriigi isik',
+  '300':'300 — Käibemaksugrupi liige (sh grupi esindusisik)',
+};
 const TYPES={M_101:'M_1',M_102:'M_1',M_103:'M_1',M_104:'M_1',M_105:'M_1',M_201:'M_2',M_202:'M_2',M_203:'M_2',M_204:'M_2',M_205:'M_2',M_206:'M_2',M_207:'M_2',M_208:'M_2',M_209:'M_2',M_210:'M_2',M_211:'M_2',M_212:'M_2',M_301:'M_3',M_302:'M_3',M_303:'M_3',M_304:'M_3',S_101:'S_',S_102:'S_',S_103:'S_',S_104:'S_',S_105:'S_',S_106:'S_',O_101:'O_',O_102:'O_',O_103:'O_',O_104:'O_',O_106:'O_',O_201:'O_',O_202:'O_',O_203:'O_',O_204:'O_',O_301:'O_',O_302:'O_',O_303:'O_',O_304:'O_',O_305:'O_',O_306:'O_',O_307:'O_',O_308:'O_',O_309:'O_',O_310:'O_',O_401:'O_',O_402:'O_',O_403:'O_',O_404:'O_',O_405:'O_',O_501:'O_',O_502:'O_',O_601:'O_',A_101:'A_'};
 const KMK=[{kood:'1',sel:'Siseriiklik 22% müük'},{kood:'2',sel:'Siseriiklik 9% müük'},{kood:'3',sel:'Kassapõhine 22%'},{kood:'4',sel:'Kasuminorm 9%'},{kood:'5',sel:'Kasuminorm 22%'},{kood:'6',sel:'Reisiteenus kasuminorm'},{kood:'7',sel:'Pöördmaks müüja'},{kood:'8',sel:'Kauba üh.sis. 0%'},{kood:'9',sel:'Teenus teise EL MK 0%'},{kood:'10',sel:'Eksport 0%'},{kood:'11',sel:'0% muud kaubad'},{kood:'12',sel:'Maksuvaba käive'},{kood:'13',sel:'Sisend 22%'},{kood:'14',sel:'Sisend 9%'},{kood:'15',sel:'Kassapõhine sisend 22%'},{kood:'16',sel:'Osaline mahaarvamine'},{kood:'17',sel:'Import sisend-KM'},{kood:'18',sel:'Põhivara sisend-KM (EE)'},{kood:'19',sel:'Sõiduauto 100% sisend-KM'},{kood:'20',sel:'Sõiduauto 50% sisend-KM'},{kood:'21',sel:'Üh.sis. soetamine (S)'},{kood:'22',sel:'Teenused teise EL MK (S)'},{kood:'23',sel:'Pöördmaks ostja'},{kood:'24',sel:'Sisend-KM korrigeerimine'},{kood:'25',sel:'Arvestuslik kanne 22%'}];
 const HEADINGS={
@@ -775,30 +783,30 @@ let fpOpen=true;
 let rows=[
   {_h:'main_M'},
   {_h:'std'},
-  {id:51,nr:'',g:'std',kmk:'1',type:'M_101',km:'0.22',sum:400,vat:88,pkat:'1',preg:'11111125',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Uus Arve OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10025',ettemaks:'',kp:'2024-11-28',arvesum:488,kreeditkp:'',kom:'22% käive – uus kirje',diff:'new'},
+  {id:51,nr:'',g:'std',kmk:'1',type:'M_101',km:'0.22',sum:400,vat:88,pkat:'100',preg:'11111125',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Uus Arve OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10025',ettemaks:'',kp:'2024-11-28',arvesum:488,kreeditkp:'',kom:'22% käive – uus kirje',diff:'new'},
   {id:57,nr:'',g:'std',kmk:'1',type:'M_101',km:'0.22',sum:5000,vat:1100,pkat:'101',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'SA10001',ettemaks:'',kp:'2024-11-12',arvesum:5000,kreeditkp:'',kom:'Salastatud arve – 22% käive',diff:'sent'},
   {id:58,nr:'',g:'std',kmk:'2',type:'M_101',km:'0.09',sum:2000,vat:180,pkat:'101',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'SA10002',ettemaks:'',kp:'2024-11-18',arvesum:2000,kreeditkp:'',kom:'Salastatud arve – 9% käive',diff:'sent'},
-  {id:1,nr:'1',g:'std',kmk:'1',type:'M_101',km:'0.22',sum:1000,vat:220,pkat:'1',preg:'11111111',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Arve Esitaja OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10001',ettemaks:'',kp:'2024-11-02',arvesum:1000,kreeditkp:'',kom:'22% käive – Eesti juriidiline isik',diff:'sent'},
-  {id:2,nr:'2',g:'std',kmk:'1',type:'M_101',km:'0.22',sum:1000,vat:220,pkat:'2',preg:'',pkoodtaps:'',pnimi:'(füüsiline isik)',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'2024-11-02',arvesum:0,kreeditkp:'',kom:'22% käive füüsilisele isikule',diff:'sent'},
-  {id:3,nr:'',g:'std',kmk:'2',type:'M_101',km:'0.09',sum:1000,vat:90,pkat:'1',preg:'11111112',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Teine Arve Esitaja OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10004',ettemaks:'',kp:'2024-11-02',arvesum:1000,kreeditkp:'',kom:'9% käive',diff:'sent'},
-  {id:4,nr:'3',g:'std',kmk:'3',type:'M_102',km:'0.22',sum:2500,vat:550,pkat:'1',preg:'11111113',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Ettemaks OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'EA10001',kp:'2024-11-02',arvesum:3000,kreeditkp:'',kom:'Kassapõhine ettemaks',diff:'mod'},
-  {id:5,nr:'',g:'std',kmk:'4',type:'M_103',km:'0.09',sum:458.72,vat:41.28,pkat:'1',preg:'11111115',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Kasutatud kaup OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10006',ettemaks:'',kp:'2024-11-04',arvesum:2000,kreeditkp:'',kom:'Kasuminorm – kasutatud kaup',diff:'sent'},
-  {id:6,nr:'',g:'std',kmk:'7',type:'M_105',km:'0',sum:1000,vat:0,pkat:'1',preg:'11111119',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'EE Pöördmaks OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10010',ettemaks:'',kp:'2024-11-08',arvesum:1000,kreeditkp:'',kom:'Pöördmaks – müüja',diff:'sent'},
+  {id:1,nr:'1',g:'std',kmk:'1',type:'M_101',km:'0.22',sum:1000,vat:220,pkat:'100',preg:'11111111',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Arve Esitaja OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10001',ettemaks:'',kp:'2024-11-02',arvesum:1000,kreeditkp:'',kom:'22% käive – Eesti juriidiline isik',diff:'sent'},
+  {id:2,nr:'2',g:'std',kmk:'1',type:'M_101',km:'0.22',sum:1000,vat:220,pkat:'200',preg:'',pkoodtaps:'',pnimi:'(füüsiline isik)',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'2024-11-02',arvesum:0,kreeditkp:'',kom:'22% käive füüsilisele isikule',diff:'sent'},
+  {id:3,nr:'',g:'std',kmk:'2',type:'M_101',km:'0.09',sum:1000,vat:90,pkat:'100',preg:'11111112',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Teine Arve Esitaja OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10004',ettemaks:'',kp:'2024-11-02',arvesum:1000,kreeditkp:'',kom:'9% käive',diff:'sent'},
+  {id:4,nr:'3',g:'std',kmk:'3',type:'M_102',km:'0.22',sum:2500,vat:550,pkat:'100',preg:'11111113',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Ettemaks OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'EA10001',kp:'2024-11-02',arvesum:3000,kreeditkp:'',kom:'Kassapõhine ettemaks',diff:'mod'},
+  {id:5,nr:'',g:'std',kmk:'4',type:'M_103',km:'0.09',sum:458.72,vat:41.28,pkat:'100',preg:'11111115',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Kasutatud kaup OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10006',ettemaks:'',kp:'2024-11-04',arvesum:2000,kreeditkp:'',kom:'Kasuminorm – kasutatud kaup',diff:'sent'},
+  {id:6,nr:'',g:'std',kmk:'7',type:'M_105',km:'0',sum:1000,vat:0,pkat:'100',preg:'11111119',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'EE Pöördmaks OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10010',ettemaks:'',kp:'2024-11-08',arvesum:1000,kreeditkp:'',kom:'Pöördmaks – müüja',diff:'sent'},
   {_h:'null'},
-  {id:7,nr:'5',g:'null',kmk:'8',type:'M_201',km:'0',sum:1000,vat:0,pkat:'1',preg:'FI08611111',pkoodtaps:'KMKR_NUMBER',pnimi:'EU Kaup OY',grpkat:'',grpreg:'',grpnimi:'',riik:'FI',riiktaps:'RR_ostja',arvenr:'MA10011',ettemaks:'',kp:'2024-11-10',arvesum:1000,kreeditkp:'',kom:'Kauba üh.sis. käive',diff:'sent'},
-  {id:8,nr:'',g:'null',kmk:'9',type:'M_202',km:'0',sum:1000,vat:0,pkat:'1',preg:'LV41111111111',pkoodtaps:'KMKR_NUMBER',pnimi:'EU Teenus SIA',grpkat:'',grpreg:'',grpnimi:'',riik:'LV',riiktaps:'RR_ostja',arvenr:'MA10012',ettemaks:'',kp:'2024-11-11',arvesum:1000,kreeditkp:'',kom:'Üh.sis. teenuse käive',diff:'sent'},
+  {id:7,nr:'5',g:'null',kmk:'8',type:'M_201',km:'0',sum:1000,vat:0,pkat:'100',preg:'FI08611111',pkoodtaps:'KMKR_NUMBER',pnimi:'EU Kaup OY',grpkat:'',grpreg:'',grpnimi:'',riik:'FI',riiktaps:'RR_ostja',arvenr:'MA10011',ettemaks:'',kp:'2024-11-10',arvesum:1000,kreeditkp:'',kom:'Kauba üh.sis. käive',diff:'sent'},
+  {id:8,nr:'',g:'null',kmk:'9',type:'M_202',km:'0',sum:1000,vat:0,pkat:'100',preg:'LV41111111111',pkoodtaps:'KMKR_NUMBER',pnimi:'EU Teenus SIA',grpkat:'',grpreg:'',grpnimi:'',riik:'LV',riiktaps:'RR_ostja',arvenr:'MA10012',ettemaks:'',kp:'2024-11-11',arvesum:1000,kreeditkp:'',kom:'Üh.sis. teenuse käive',diff:'sent'},
   {id:9,nr:'',g:'null',kmk:'10',type:'M_208',km:'0',sum:1000,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'2024-11-20',arvesum:0,kreeditkp:'',kom:'Kauba eksport',diff:'sent'},
-  {id:41,nr:'',g:'null',kmk:'9',type:'M_202',km:'0',sum:2500,vat:0,pkat:'1',preg:'SE556123456701',pkoodtaps:'KMKR_NUMBER',pnimi:'Rootsi Teenus AB',grpkat:'',grpreg:'',grpnimi:'',riik:'SE',riiktaps:'RR_ostja',arvenr:'MA10031',ettemaks:'',kp:'2024-11-28',arvesum:2500,kreeditkp:'',kom:'Uus – üh.sis. teenuse käive Rootsi',diff:'new'},
+  {id:41,nr:'',g:'null',kmk:'9',type:'M_202',km:'0',sum:2500,vat:0,pkat:'100',preg:'SE556123456701',pkoodtaps:'KMKR_NUMBER',pnimi:'Rootsi Teenus AB',grpkat:'',grpreg:'',grpnimi:'',riik:'SE',riiktaps:'RR_ostja',arvenr:'MA10031',ettemaks:'',kp:'2024-11-28',arvesum:2500,kreeditkp:'',kom:'Uus – üh.sis. teenuse käive Rootsi',diff:'new'},
   {_h:'maks'},
-  {id:10,nr:'',g:'maks',kmk:'12',type:'M_301',km:'0',sum:1200,vat:0,pkat:'1',preg:'11111123',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Maksuvaba OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10023',ettemaks:'',kp:'2024-11-25',arvesum:1200,kreeditkp:'',kom:'Maksuvaba käive',diff:'mod'},
+  {id:10,nr:'',g:'maks',kmk:'12',type:'M_301',km:'0',sum:1200,vat:0,pkat:'100',preg:'11111123',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Maksuvaba OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10023',ettemaks:'',kp:'2024-11-25',arvesum:1200,kreeditkp:'',kom:'Maksuvaba käive',diff:'mod'},
   {_h:'tehpart'},
-  {id:11,nr:'7',g:'tehpart',kmk:'2',type:'M_101',km:'0.09',sum:600,vat:54,pkat:'1',preg:'11111124',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Segaarve OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10024',ettemaks:'',kp:'2024-11-26',arvesum:1500,kreeditkp:'',kom:'Segaarve – 9% osa',diff:'sent'},
-  {id:12,nr:'8',g:'tehpart',kmk:'1',type:'M_101',km:'0.22',sum:900,vat:198,pkat:'1',preg:'11111124',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Segaarve OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10024',ettemaks:'',kp:'2024-11-26',arvesum:1500,kreeditkp:'',kom:'Segaarve – 22% osa',diff:'sent'},
-  {id:13,nr:'',g:'tehpart',kmk:'1',type:'M_101',km:'0.22',sum:1000,vat:220,pkat:'1',preg:'11111130',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Grupi Liikme Partner OÜ',grpkat:'3',grpreg:'10000002',grpnimi:'Grupi Liige OÜ',riik:'',riiktaps:'',arvenr:'MA12001',ettemaks:'',kp:'2024-11-10',arvesum:1000,kreeditkp:'',kom:'KM-grupi liikme käive',diff:'del'},
+  {id:11,nr:'7',g:'tehpart',kmk:'2',type:'M_101',km:'0.09',sum:600,vat:54,pkat:'100',preg:'11111124',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Segaarve OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10024',ettemaks:'',kp:'2024-11-26',arvesum:1500,kreeditkp:'',kom:'Segaarve – 9% osa',diff:'sent'},
+  {id:12,nr:'8',g:'tehpart',kmk:'1',type:'M_101',km:'0.22',sum:900,vat:198,pkat:'100',preg:'11111124',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Segaarve OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA10024',ettemaks:'',kp:'2024-11-26',arvesum:1500,kreeditkp:'',kom:'Segaarve – 22% osa',diff:'sent'},
+  {id:13,nr:'',g:'tehpart',kmk:'1',type:'M_101',km:'0.22',sum:1000,vat:220,pkat:'100',preg:'11111130',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Grupi Liikme Partner OÜ',grpkat:'300',grpreg:'10000002',grpnimi:'Grupi Liige OÜ',riik:'',riiktaps:'',arvenr:'MA12001',ettemaks:'',kp:'2024-11-10',arvesum:1000,kreeditkp:'',kom:'KM-grupi liikme käive',diff:'del'},
   {_h:'kreedi'},
-  {id:14,nr:'9',g:'kreedi',kmk:'1',type:'M_101',km:'0.22',sum:-1500,vat:-330,pkat:'1',preg:'11111131',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Kreedit OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'KR0001',ettemaks:'',kp:'2024-11-30',arvesum:-1500,kreeditkp:'2024-09-27',kom:'22% kreeditarve',diff:'mod'},
+  {id:14,nr:'9',g:'kreedi',kmk:'1',type:'M_101',km:'0.22',sum:-1500,vat:-330,pkat:'100',preg:'11111131',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Kreedit OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'KR0001',ettemaks:'',kp:'2024-11-30',arvesum:-1500,kreeditkp:'2024-09-27',kom:'22% kreeditarve',diff:'mod'},
   {_h:'lootu'},
-  {id:15,nr:'',g:'lootu',kmk:'1',type:'M_101',km:'0.22',sum:-1000,vat:-220,pkat:'1',preg:'11111111',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Arve Esitaja OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA00099',ettemaks:'',kp:'2022-12-03',arvesum:-1000,kreeditkp:'',kom:'Lootusetu nõue',diff:'sent'},
+  {id:15,nr:'',g:'lootu',kmk:'1',type:'M_101',km:'0.22',sum:-1000,vat:-220,pkat:'100',preg:'11111111',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Arve Esitaja OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'MA00099',ettemaks:'',kp:'2022-12-03',arvesum:-1000,kreeditkp:'',kom:'Lootusetu nõue',diff:'sent'},
   {_h:'main_S'},
   {_h:'poord'},
   {id:16,nr:'11',g:'poord',kmk:'21',type:'S_101',km:'0.22',sum:1000,vat:220,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Kauba üh.sis. soetamine',diff:'sent'},
@@ -806,20 +814,20 @@ let rows=[
   {id:52,nr:'',g:'poord',kmk:'23',type:'S_104',km:'0.22',sum:500,vat:110,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'',arvesum:0,kreeditkp:'',kom:'Muu kaup – uus pöördmaks',diff:'new'},
   {_h:'main_O'},
   {_h:'sisend'},
-  {id:18,nr:'12',g:'sisend',kmk:'13',type:'O_101',km:'',sum:220,vat:0,pkat:'1',preg:'13000001',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Sisend OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'OA27001',ettemaks:'',kp:'2024-11-05',arvesum:1000,kreeditkp:'',kom:'Lubatud sisend-KM',diff:'sent'},
-  {id:19,nr:'',g:'sisend',kmk:'16',type:'O_103',km:'',sum:110,vat:0,pkat:'1',preg:'13000004',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Osaline Sisend OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'OA30001',ettemaks:'',kp:'2024-11-08',arvesum:1000,kreeditkp:'',kom:'Osaline mahaarvamine 50%',diff:'del'},
+  {id:18,nr:'12',g:'sisend',kmk:'13',type:'O_101',km:'',sum:220,vat:0,pkat:'100',preg:'13000001',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Sisend OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'OA27001',ettemaks:'',kp:'2024-11-05',arvesum:1000,kreeditkp:'',kom:'Lubatud sisend-KM',diff:'sent'},
+  {id:19,nr:'',g:'sisend',kmk:'16',type:'O_103',km:'',sum:110,vat:0,pkat:'100',preg:'13000004',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Osaline Sisend OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'OA30001',ettemaks:'',kp:'2024-11-08',arvesum:1000,kreeditkp:'',kom:'Osaline mahaarvamine 50%',diff:'del'},
   {id:60,nr:'',g:'sisend',kmk:'17',type:'O_106',km:'',sum:4400,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'TD240891',ettemaks:'',kp:'2024-11-08',arvesum:0,kreeditkp:'',kom:'Tollideklaratsiooni alusel tasutud impordi KM',diff:'sent'},
   {id:61,nr:'',g:'sisend',kmk:'17',type:'O_106',km:'',sum:1760,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'2024-11-15',arvesum:0,kreeditkp:'',kom:'KMD alusel (KMD rida 4.1) tasutud impordi KM',diff:'sent'},
   {id:70,nr:'',g:'sisend',kmk:'',type:'O_104',km:'',sum:660,vat:0,pkat:'101',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'2024-11-14',arvesum:0,kreeditkp:'',kom:'Salastatud arve sisend-KM (kutse- ja ametisaladus)',diff:'sent'},
   {_h:'sistepart'},
   {id:71,nr:'',g:'sistepart',kmk:'13',type:'O_101',km:'',sum:330,vat:0,pkat:'101',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'',ettemaks:'',kp:'2027-01-15',arvesum:0,kreeditkp:'',kom:'Salastatud arve sisend-KM (tehingupartneri erisus)',diff:'sent'},
   {_h:'phiv'},
-  {id:20,nr:'',g:'phiv',kmk:'18',type:'O_201',km:'',sum:46000,vat:0,pkat:'1',preg:'13000007',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Kombaini Sisend OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'OA32001',ettemaks:'',kp:'2024-11-10',arvesum:210000,kreeditkp:'',kom:'Põhivara (kombain) sisend-KM',diff:'mod'},
+  {id:20,nr:'',g:'phiv',kmk:'18',type:'O_201',km:'',sum:46000,vat:0,pkat:'100',preg:'13000007',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Kombaini Sisend OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'OA32001',ettemaks:'',kp:'2024-11-10',arvesum:210000,kreeditkp:'',kom:'Põhivara (kombain) sisend-KM',diff:'mod'},
   {id:62,nr:'',g:'phiv',kmk:'',type:'O_203',km:'',sum:33000,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'TD241102',ettemaks:'',kp:'2024-11-20',arvesum:150000,kreeditkp:'',kom:'Imporditud põhivara sisend-KM (v.a sõiduautod)',diff:'sent'},
   {_h:'auto'},
-  {id:21,nr:'',g:'auto',kmk:'19',type:'O_301',km:'',sum:22000,vat:0,pkat:'1',preg:'13000009',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Sõiduauto 100 OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'OA35001',ettemaks:'',kp:'2024-11-12',arvesum:100000,kreeditkp:'',kom:'Sõiduauto 100% sisend-KM',diff:'sent'},
-  {id:22,nr:'',g:'auto',kmk:'20',type:'O_304',km:'',sum:11000,vat:0,pkat:'1',preg:'13000010',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Sõiduauto 50 OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'OA37001',ettemaks:'',kp:'2024-11-13',arvesum:100000,kreeditkp:'',kom:'Sõiduauto 50% sisend-KM',diff:'sent'},
-  {id:53,nr:'',g:'auto',kmk:'19',type:'O_301',km:'',sum:18000,vat:0,pkat:'1',preg:'13000011',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Sõiduauto Uus OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'OA38001',ettemaks:'',kp:'2024-11-20',arvesum:80000,kreeditkp:'',kom:'Sõiduauto 100% – uus',diff:'new'},
+  {id:21,nr:'',g:'auto',kmk:'19',type:'O_301',km:'',sum:22000,vat:0,pkat:'100',preg:'13000009',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Sõiduauto 100 OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'OA35001',ettemaks:'',kp:'2024-11-12',arvesum:100000,kreeditkp:'',kom:'Sõiduauto 100% sisend-KM',diff:'sent'},
+  {id:22,nr:'',g:'auto',kmk:'20',type:'O_304',km:'',sum:11000,vat:0,pkat:'100',preg:'13000010',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Sõiduauto 50 OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'OA37001',ettemaks:'',kp:'2024-11-13',arvesum:100000,kreeditkp:'',kom:'Sõiduauto 50% sisend-KM',diff:'sent'},
+  {id:53,nr:'',g:'auto',kmk:'19',type:'O_301',km:'',sum:18000,vat:0,pkat:'100',preg:'13000011',pkoodtaps:'ARIREGISTRIKOOD',pnimi:'Sõiduauto Uus OÜ',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'OA38001',ettemaks:'',kp:'2024-11-20',arvesum:80000,kreeditkp:'',kom:'Sõiduauto 100% – uus',diff:'new'},
   {id:63,nr:'',g:'auto',kmk:'',type:'O_302',km:'',sum:24200,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'TD241201',ettemaks:'',kp:'2024-11-22',arvesum:110000,kreeditkp:'',kom:'Imporditud sõiduauto 100% sisend-KM',diff:'sent'},
   {id:64,nr:'',g:'auto',kmk:'',type:'O_305',km:'',sum:9900,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'TD241202',ettemaks:'',kp:'2024-11-22',arvesum:90000,kreeditkp:'',kom:'Imporditud sõiduauto 50% sisend-KM',diff:'sent'},
   {id:65,nr:'',g:'auto',kmk:'',type:'O_308',km:'',sum:440,vat:0,pkat:'',preg:'',pkoodtaps:'',pnimi:'',grpkat:'',grpreg:'',grpnimi:'',riik:'',riiktaps:'',arvenr:'TD241210',ettemaks:'',kp:'2024-11-25',arvesum:2000,kreeditkp:'',kom:'Imporditud sõiduauto 100% varuosad sisend-KM',diff:'sent'},
@@ -1168,7 +1176,7 @@ function rowHtml(r,mId,mdId,tId){
     +'<td>'+kmkC+'</td>'
     +'<td class="right ec'+(neg?' neg':'')+'" onclick="openEditModal('+r.id+')" title="Kliki muutmiseks">'+(fmt(r.sum))+'</td>'
     +'<td class="right'+(neg?' neg':'')+'">'+(r.km===''?'':(r.vat!==undefined&&r.vat!==''?fmt(r.vat):'—'))+'</td>'
-    +'<td>'+(d(r.pkat))+'</td>'
+    +'<td>'+(r.pkat?'<span class="cat-b" title="'+(PKAT_LABELS[r.pkat]||r.pkat)+'">'+r.pkat+'</span>':'')+'</td>'
     +'<td class="muted">'+(r.preg||'')+'</td>'
     +'<td title="'+(r.pnimi||'')+'">'+(r.pnimi||'')+'</td>'
     +'<td class="muted">'+(r.pkoodtaps||'')+'</td>'
