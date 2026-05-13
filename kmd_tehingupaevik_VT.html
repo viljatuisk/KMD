@@ -352,21 +352,51 @@ td.ec:hover{background:var(--blue-lt)!important}
   </div>
   <div class="tbl-wrap">
     <table>
-      <thead><tr>
+      <thead>
+      <tr>
         <th>#</th><th style="min-width:90px">Olek / Muudatus</th>
         <th style="min-width:72px">KMD tüüp</th>
         <th class="col-desc col-desc-hidden" style="min-width:200px">KMD tüübi kommentaar</th>
         <th style="min-width:150px">KMD tüübi sisu</th><th>KM%</th><th>KMK</th>
         <th style="min-width:110px;text-align:right">Deklareeritav summa</th>
-        <th style="min-width:70px;text-align:right">KM (€)</th><th title="Tehingupartneri ja arve erisuse tunnus" style="min-width:60px;cursor:help">TP/Arve tunnus</th><th style="min-width:90px">Partneri reg/KMKR</th>
+        <th style="min-width:70px;text-align:right">KM (&#8364;)</th>
+        <th title="Tehingupartneri ja arve erisuse tunnus" style="min-width:60px;cursor:help">TP/Arve tunnus</th>
+        <th style="min-width:90px">Partneri reg/KMKR</th>
         <th style="min-width:100px">Partneri nimi</th><th style="min-width:75px">Koodi täps.</th>
         <th>Grupp kat</th><th style="min-width:75px">Grupi liikme reg</th>
+        <th style="min-width:75px">Grupi liikme koodi täps.</th>
         <th style="min-width:90px">Grupi liikme nimi</th><th>Riik</th>
         <th style="min-width:70px">Riigi täps.</th><th style="min-width:65px">Arve nr</th>
         <th style="min-width:65px">Ettemaks nr</th><th style="min-width:72px">Kuupäev</th>
         <th style="min-width:90px;text-align:right">Arve kogusumma km/ta</th>
         <th style="min-width:80px">Kreeditkp</th><th style="min-width:80px"></th>
-      </tr></thead>
+      </tr>
+      <tr style="background:#1e3f6a">
+        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;padding:2px 6px"></th>
+        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;padding:2px 6px"></th>
+        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;font-family:monospace;padding:2px 6px">accountSubID</th>
+        <th class="col-desc col-desc-hidden" style="font-size:9px;color:#6b8cbf;font-weight:normal;padding:2px 6px"></th>
+        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;padding:2px 6px"></th>
+        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;font-family:monospace;padding:2px 6px">taxPercentageRate</th>
+        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;padding:2px 6px"></th>
+        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;font-family:monospace;padding:2px 6px;text-align:right">amount</th>
+        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;padding:2px 6px"></th>
+        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;font-family:monospace;padding:2px 6px">identifierCategory</th>
+        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;font-family:monospace;padding:2px 6px">identifierCode</th>
+        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;font-family:monospace;padding:2px 6px">identifierDescription</th>
+        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;font-family:monospace;padding:2px 6px">identifierCategory (grupp)</th>
+        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;font-family:monospace;padding:2px 6px">identifierCode (grupp)</th>
+        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;padding:2px 6px">— (nimi)</th>
+        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;font-family:monospace;padding:2px 6px">accountSubID (RTK2T2013ap)</th>
+        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;font-family:monospace;padding:2px 6px">parentSubaccountCode</th>
+        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;font-family:monospace;padding:2px 6px">documentNumber</th>
+        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;font-family:monospace;padding:2px 6px">documentApplyToNumber</th>
+        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;font-family:monospace;padding:2px 6px">documentDate</th>
+        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;font-family:monospace;padding:2px 6px;text-align:right">measurableQuantity</th>
+        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;font-family:monospace;padding:2px 6px">measurableStartDateTime</th>
+        <th style="font-size:9px;color:#6b8cbf;font-weight:normal;padding:2px 6px"></th>
+      </tr>
+      </thead>
       <tbody id="tableBody"></tbody>
     </table>
   </div>
@@ -448,6 +478,7 @@ td.ec:hover{background:var(--blue-lt)!important}
       <select id="f-grpkat"><option value="">- ei ole -</option><option value="300">300 - KM-grupi liige</option></select>
     </div>
     <div class="fld"><label>Grupi liikme registrikood</label><input id="f-grpreg"/></div>
+    <div class="fld"><label>Grupi liikme koodi täpsustus</label><input id="f-grpdesc" placeholder="nt ARIREGISTRIKOOD"/></div>
     <div class="fld"><label>Grupi liikme nimi</label><input id="f-grpnimi"/></div>
   </div>
   <div class="fsec">Riik ja muud</div>
@@ -619,6 +650,7 @@ td.ec:hover{background:var(--blue-lt)!important}
         <select id="e-grpkat"><option value="">- ei ole -</option><option value="300">300 - KM-grupi liige</option></select>
       </div>
       <div class="fld"><label>Grupi liikme registrikood</label><input id="e-grpreg"/></div>
+      <div class="fld"><label>Grupi liikme koodi täpsustus</label><input id="e-grpdesc" placeholder="nt ARIREGISTRIKOOD"/></div>
       <div class="fld"><label>Grupi liikme nimi</label><input id="e-grpnimi"/></div>
     </div>
     <div class="modal-btns" style="margin-top:10px;border-top:1px solid var(--border2);padding-top:10px">
@@ -935,7 +967,7 @@ function openEditModal(id){
   editingId=id;
   buildEditKmk();
   document.getElementById('editModalTitle').textContent='Muuda kirjet'+(r.arvenr?' — '+r.arvenr:'');
-  ['type','kmk','km','arvenr','ettemaks','kp','pkat','preg','pkoodtaps','pnimi','riik','riiktaps','kreeditkp','kom','grpkat','grpreg','grpnimi'].forEach(k=>{
+  ['type','kmk','km','arvenr','ettemaks','kp','pkat','preg','pkoodtaps','pnimi','riik','riiktaps','kreeditkp','kom','grpkat','grpreg','grpdesc','grpnimi'].forEach(k=>{
     const el=document.getElementById('e-'+k);if(el)el.value=r[k]||'';
   });
   ['sum','vat','arvesum'].forEach(k=>{
@@ -988,6 +1020,7 @@ function saveEdit(){
   r.kom=document.getElementById('e-kom').value;
   r.grpkat=document.getElementById('e-grpkat').value;
   r.grpreg=document.getElementById('e-grpreg').value;
+  r.grpdesc=document.getElementById('e-grpdesc').value;
   r.grpnimi=document.getElementById('e-grpnimi').value;
   if(r.diff==='sent'||r.diff==='mod')r.diff='mod';
   delete r.emtaErr; // Parandus kustutab EMTA vea sellelt realt
@@ -1182,6 +1215,7 @@ function rowHtml(r,mId,mdId,tId){
     +'<td class="muted">'+(r.pkoodtaps||'')+'</td>'
     +'<td>'+(d(r.grpkat))+'</td>'
     +'<td class="muted">'+(r.grpreg||'')+'</td>'
+    +'<td class="muted">'+(r.grpdesc||'')+'</td>'
     +'<td title="'+(r.grpnimi||'')+'">'+(r.grpnimi||'')+'</td>'
     +'<td style="text-align:center">'+(r.riik?'<span class="cat-b">'+r.riik+'</span>':'')+'</td>'
     +'<td class="muted">'+(r.riiktaps||'')+'</td>'
@@ -1300,7 +1334,7 @@ function addRow(){
       if(inSec&&rows[i]._h){insertIdx=i;break;}
     }
   }
-  rows.splice(insertIdx,0,{id:nextId++,nr:'',g:hkey,kmk:document.getElementById('f-kmk').value,type,km:sec==='O_'?'':document.getElementById('f-km').value,sum,vat:parseFloat(document.getElementById('f-vat').value)||0,pkat:document.getElementById('f-pkat').value,preg:document.getElementById('f-preg').value,pkoodtaps:document.getElementById('f-pkoodtaps').value,pnimi:document.getElementById('f-pnimi').value,grpkat:document.getElementById('f-grpkat').value,grpreg:document.getElementById('f-grpreg').value,grpnimi:document.getElementById('f-grpnimi').value,riik:(document.getElementById('f-riik').value||'').toUpperCase(),riiktaps:document.getElementById('f-riiktaps').value,arvenr:document.getElementById('f-arvenr').value,ettemaks:document.getElementById('f-ettemaks').value,kp:document.getElementById('f-kp').value,arvesum:parseFloat(document.getElementById('f-arvesum').value)||0,kreeditkp:document.getElementById('f-kreeditkp').value,kom:document.getElementById('f-kom').value,diff:'new'});
+  rows.splice(insertIdx,0,{id:nextId++,nr:'',g:hkey,kmk:document.getElementById('f-kmk').value,type,km:sec==='O_'?'':document.getElementById('f-km').value,sum,vat:parseFloat(document.getElementById('f-vat').value)||0,pkat:document.getElementById('f-pkat').value,preg:document.getElementById('f-preg').value,pkoodtaps:document.getElementById('f-pkoodtaps').value,pnimi:document.getElementById('f-pnimi').value,grpkat:document.getElementById('f-grpkat').value,grpreg:document.getElementById('f-grpreg').value,grpdesc:document.getElementById('f-grpdesc')?document.getElementById('f-grpdesc').value:'',grpnimi:document.getElementById('f-grpnimi').value,riik:(document.getElementById('f-riik').value||'').toUpperCase(),riiktaps:document.getElementById('f-riiktaps').value,arvenr:document.getElementById('f-arvenr').value,ettemaks:document.getElementById('f-ettemaks').value,kp:document.getElementById('f-kp').value,arvesum:parseFloat(document.getElementById('f-arvesum').value)||0,kreeditkp:document.getElementById('f-kreeditkp').value,kom:document.getElementById('f-kom').value,diff:'new'});
   document.getElementById('addMsg').style.display='block';
   setTimeout(()=>document.getElementById('addMsg').style.display='none',2000);
   buildKmkAll();renderTable();clearForm();
